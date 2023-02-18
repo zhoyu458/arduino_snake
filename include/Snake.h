@@ -19,7 +19,10 @@ class Snake {
     void eatFruit(Node*);
     int status(Node*);
     void print();
+    int peek(Node* n, char dir);
+    bool HitSelfSideCheckOk( char dir);
 
+   
 
 };
 

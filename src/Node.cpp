@@ -39,9 +39,9 @@ void Node::reposition()
 
 void Node::recolor()
 {
-    this->red = random(12);
-    this->green = random(6);
-    this->blue = random(6);
+    this->red = random(12) + 1;
+    this->green = random(6)+ 1;
+    this->blue = random(6) + 1;
 }
 
 void Node::refresh(LinkedList<Node *> *list)

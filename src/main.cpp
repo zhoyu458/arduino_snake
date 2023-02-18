@@ -5,13 +5,23 @@
 #include "Node.h"
 #include "Utils.h"
 #include "Snake.h"
+#include "PathSearch.h"
+
+#include "BitMapStorage.h"
 
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
 Node *fruit = new Node(8, 0, 0, 1, 0);
-
+BitMapStorage *bs = new BitMapStorage(NUM_LEDS);
 CRGB leds[NUM_LEDS];
+bool justAteFruit = false;
 
+PathSearch *ps = new PathSearch(
+    fruit,
+    &(snake->list),
+    bs,
+    "",
+    "");
 void gameOver()
 {
   FastLED.clear();
@@ -27,7 +37,6 @@ void gameOver()
     FastLED.show();
   }
   FastLED.clear();
-
 }
 
 void renderSingleNode(Node *n)
@@ -59,69 +68,206 @@ void renderGame()
   FastLED.show();
 }
 
-
-void restart(){
-   snake->list.clear();
-   snake->add(new Node(1, 0));
-   fruit->refresh(&(snake->list));
+void restart()
+{
+  snake->list.clear();
+  snake->add(new Node(1, 0));
+  fruit->refresh(&(snake->list));
 }
+
+void pause()
+{
+  while (1)
+  {
+  };
+}
+
 void setup()
 {
   Serial.begin(9600);
   Serial.println("Program Start");
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setMaxPowerInVoltsAndMilliamps(MAX_VOLTS, MAX_AMPS);
+  // FastLED.setMaxPowerInVoltsAndMilliamps(MAX_VOLTS, MAX_AMPS);
   randomSeed(analogRead(A0));
 
   snake->add(new Node(1, 0));
 }
 
-bool justAteFruit = false;
-
 void loop()
 {
-  
 
   char dir = UP;
 
+  String fruitToSnakeHeadPath = ps->getPath();
 
-  if (snake->list.get(0)->row < fruit->row && snake->direction != DOWN)
-    dir = UP;
-  else if (snake->list.get(0)->row > fruit->row && snake->direction != UP)
-    dir = DOWN;
-  else if (snake->list.get(0)->col < fruit->col && snake->direction != LEFT)
-    dir = RIGHT;
+  if (fruitToSnakeHeadPath.length() == 0)
+  {
+    // length is 0 means not path exist
+    snake->move(UP);
+    int stu = snake->status(fruit);
+
+    if (stu == HIT_WALL || stu == HIT_SELF)
+    {
+      gameOver();
+      restart();
+    }
+    else if (stu == HIT_FRUIT)
+    {
+
+      snake->eatFruit(fruit);
+
+      fruit->refresh(&(snake->list));
+
+      justAteFruit = true;
+    }
+
+    renderGame();
+
+    if (!justAteFruit)
+      delay(speed);
+
+    justAteFruit = false;
+  }
   else
-    dir = LEFT;
-
-
-  snake->move(dir);
-
-  int stu = snake->status(fruit);
-
-
-  if (stu == HIT_WALL || stu == HIT_SELF)
   {
-    gameOver();
-    restart();
+    for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
+    {
+      dir = fruitToSnakeHeadPath.charAt(i);
+      if (dir == UP)
+        dir = DOWN;
+      else if (dir == DOWN)
+        dir = UP;
+      else if (dir == LEFT)
+        dir = RIGHT;
+      else if (dir == RIGHT)
+        dir = LEFT;
+
+      snake->move(dir);
+
+      int stu = snake->status(fruit);
+
+      if (stu == HIT_WALL || stu == HIT_SELF)
+      {
+        gameOver();
+        restart();
+      }
+      else if (stu == HIT_FRUIT)
+      {
+
+        snake->eatFruit(fruit);
+
+        fruit->refresh(&(snake->list));
+
+        justAteFruit = true;
+      }
+
+      renderGame();
+
+      if (!justAteFruit)
+        delay(speed);
+
+      justAteFruit = false;
+    }
   }
-  else if (stu == HIT_FRUIT)
-  {
-    
 
-    snake->eatFruit(fruit);
+  // Node *head = snake->list.get(0);
 
-    fruit->refresh(&(snake->list));
+  // int peekUp = snake->peek(head, UP);
+  // int peekDown = snake->peek(head, DOWN);
+  // int peekLeft = snake->peek(head, LEFT);
+  // int peekRight = snake->peek(head, RIGHT);
 
-    justAteFruit = true;
+  // if (snake->list.get(0)->row < fruit->row && snake->direction != DOWN)
+  // {
+  //   if (peekUp == HIT_NOTHING)
+  //   {
+  //     dir = UP;
+  //   }
+  //   else if (peekLeft == HIT_NOTHING && snake->direction != RIGHT)
+  //   {
+  //     dir = LEFT;
+  //   }
+  //   else if (peekRight == HIT_NOTHING && snake->direction != LEFT)
+  //   {
+  //     dir = RIGHT;
+  //   }
+  // }
+  // else if (snake->list.get(0)->row > fruit->row && snake->direction != UP)
+  // {
 
-  }
+  //   if (peekDown == HIT_NOTHING)
+  //   {
+  //     dir = DOWN;
+  //   }
 
+  //   else if (peekLeft == HIT_NOTHING && snake->direction != RIGHT)
+  //   {
+  //     dir = LEFT;
+  //   }
+  //   else if (peekRight == HIT_NOTHING && snake->direction != LEFT)
+  //   {
+  //     dir = RIGHT;
+  //   }
+  // }
+  // else if (snake->list.get(0)->col < fruit->col && snake->direction != LEFT)
+  // {
 
+  //   if (peekRight == HIT_NOTHING)
+  //   {
+  //     dir = RIGHT;
+  //   }
+  //   else if (peekUp == HIT_NOTHING && snake->direction != DOWN)
+  //   {
+  //     dir = UP;
+  //   }
+  //   else if (peekDown == HIT_NOTHING && snake->direction != UP)
+  //   {
+  //     dir = DOWN;
+  //   }
+  // }
+  // else
+  // {
+  //   if (peekLeft == HIT_NOTHING)
+  //   {
+  //     dir = LEFT;
+  //   }
+  //   else if (peekUp == HIT_NOTHING && snake->direction != DOWN)
+  //   {
+  //     dir = UP;
+  //   }
+  //   else if (peekRight == HIT_NOTHING && snake->direction != LEFT)
+  //   {
+  //     dir = RIGHT;
+  //   }
+  //   else
+  //   {
+  //     dir = DOWN;
+  //   }
+  // }
 
-  renderGame();
+  // snake->move(dir);
 
-  if(!justAteFruit)delay(speed);
+  // int stu = snake->status(fruit);
 
-  justAteFruit = false;
+  // if (stu == HIT_WALL || stu == HIT_SELF)
+  // {
+  //   gameOver();
+  //   restart();
+  // }
+  // else if (stu == HIT_FRUIT)
+  // {
+
+  //   snake->eatFruit(fruit);
+
+  //   fruit->refresh(&(snake->list));
+
+  //   justAteFruit = true;
+  // }
+
+  // renderGame();
+
+  // if (!justAteFruit)
+  //   delay(speed);
+
+  // justAteFruit = false;
 }
