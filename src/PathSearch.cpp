@@ -19,26 +19,26 @@ PathSearch::PathSearch(
     *this->previousBitMapSum = 0;
 }
 
-// PathSearch::~PathSearch()
-// {
+PathSearch::~PathSearch()
+{
 
-//     Serial.println("~");
-//     delete fruit;
-//     delete snakeList;
-//     delete ledMatrixBitMap;
-//     delete path;
-//     delete result;
-//     delete findPath;
-//     delete previousBitMapSum;
+    Serial.println("~");
+    // delete fruit;
+    // delete snakeList;
+    // delete ledMatrixBitMap;
+    delete path;
+    delete result;
+    delete findPath;
+    delete previousBitMapSum;
 
-//     fruit = NULL;
-//     snakeList = NULL;
-//     ledMatrixBitMap = NULL;
-//     path = NULL;
-//     result = NULL;
-//     findPath = NULL;
-//     previousBitMapSum = NULL;
-// }
+    // fruit = NULL;
+    // snakeList = NULL;
+    // ledMatrixBitMap = NULL;
+    path = NULL;
+    result = NULL;
+    findPath = NULL;
+    previousBitMapSum = NULL;
+}
 
 String PathSearch::getPath()
 {

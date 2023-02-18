@@ -138,8 +138,6 @@ int Snake::peek(Node *n, char dir)
 }
 
 bool Snake::HitSelfSideCheckOk(char dir)
-
-
 {
 
     Node *head = this->list.get(0);

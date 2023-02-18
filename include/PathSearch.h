@@ -24,7 +24,7 @@ public:
         BitMapStorage *ledMatrixBitMap
         );
         
-
+    ~PathSearch();
     String getPath();
 
     bool hitWall(int r, int c);

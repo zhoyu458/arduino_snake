@@ -1,3 +1,5 @@
+
+#include <MemoryFree.h>
 #include <Arduino.h>
 #include <LinkedList.h>
 #include <FastLED.h>
@@ -16,11 +18,9 @@ BitMapStorage *bs = new BitMapStorage(NUM_LEDS);
 CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
 
-PathSearch *ps = new PathSearch(
-    fruit,
-    &(snake->list),
-    bs
- );
+
+
+
 void gameOver()
 {
   FastLED.clear();
@@ -88,12 +88,17 @@ void setup()
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
   // FastLED.setMaxPowerInVoltsAndMilliamps(MAX_VOLTS, MAX_AMPS);
   randomSeed(analogRead(A0));
-
   snake->add(new Node(1, 0));
 }
 
 void loop()
 {
+
+
+  PathSearch *ps = new PathSearch(
+      fruit,
+      &(snake->list),
+      bs);
 
   char dir = UP;
 
@@ -107,6 +112,10 @@ void loop()
 
     if (stu == HIT_WALL || stu == HIT_SELF)
     {
+
+      delete ps;
+      ps = NULL;
+
       gameOver();
       restart();
     }
@@ -169,4 +178,6 @@ void loop()
     }
   }
 
+  delete ps;
+  ps = NULL;
 }
