@@ -3,21 +3,42 @@
 #include "Utils.h"
 
 PathSearch::PathSearch(
-    Node *fruit,                    // pass in when call get path
-    LinkedList<Node *> *snakeList,  // pass in when call get path
-    BitMapStorage *ledMatrixBitMap, // pass in at init
-    String path,
-    String result)
+    Node *fruit,
+    LinkedList<Node *> *snakeList,
+    BitMapStorage *ledMatrixBitMap)
 {
     this->fruit = fruit;
     this->snakeList = snakeList;
     this->ledMatrixBitMap = ledMatrixBitMap;
-    this->path = path;
-    this->result = result;
+    this->path = new String();
+    this->result = new String();
     this->previousBitMapSum = 0;
-    this->findPath = false;
-
+    this->findPath = new boolean();
+    this->previousBitMapSum = new unsigned int();
+    *this->findPath = false;
+    *this->previousBitMapSum = 0;
 }
+
+// PathSearch::~PathSearch()
+// {
+
+//     Serial.println("~");
+//     delete fruit;
+//     delete snakeList;
+//     delete ledMatrixBitMap;
+//     delete path;
+//     delete result;
+//     delete findPath;
+//     delete previousBitMapSum;
+
+//     fruit = NULL;
+//     snakeList = NULL;
+//     ledMatrixBitMap = NULL;
+//     path = NULL;
+//     result = NULL;
+//     findPath = NULL;
+//     previousBitMapSum = NULL;
+// }
 
 String PathSearch::getPath()
 {
@@ -35,19 +56,13 @@ String PathSearch::getPath()
 
     dfs(fruit->row, fruit->col);
 
-    return this->result;
+    return *(this->result);
 }
 
 void PathSearch::dfs(int r, int c)
 {
 
-
-
-
- 
-
-
-    if (this->findPath)
+    if (*this->findPath == true)
         return;
 
     if (this->hitWall(r, c))
@@ -77,11 +92,11 @@ void PathSearch::dfs(int r, int c)
 
     if (hitSnakeHead(r, c))
     {
-        for (unsigned int i = 0; i < path.length(); i++)
+        for (unsigned int i = 0; i < path->length(); i++)
         {
-            result += String(path.charAt(i));
+            *(this->result) += String(path->charAt(i));
         }
-        findPath = true;
+        *this->findPath = true;
         return;
     }
 
@@ -90,92 +105,93 @@ void PathSearch::dfs(int r, int c)
 
     this->ledMatrixBitMap->setNumberStatus(fruitLedNum, true);
 
+    unsigned int curSum = this->ledMatrixBitMap->getSum();
 
-    unsigned int curSum  = this->ledMatrixBitMap->getSum();
-
-    if(curSum == previousBitMapSum) {
-        findPath = true; 
+    if (curSum == *this->previousBitMapSum)
+    {
+        *this->findPath = true;
         // if two sum are the same then no path is exist, will return "";
         return;
-    }else{
-        previousBitMapSum = curSum;
     }
-
-
+    else
+    {
+        *this->previousBitMapSum = curSum;
+    }
 
     if (r < this->snakeList->get(0)->row)
     { // check up first
         // check up
-        (this->path) += String(UP);
+        *(this->path) += String(UP);
         dfs(r + 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
 
-        (this->path) += String(LEFT);
+        (*this->path) = this->path->substring(0, this->path->length() - 1);
+
+        (*this->path) += String(LEFT);
         dfs(r, c - 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(RIGHT);
+        (*this->path) += String(RIGHT);
         dfs(r, c + 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(DOWN);
+        (*this->path) += String(DOWN);
         dfs(r - 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
     }
     else if (r > this->snakeList->get(0)->row)
     {
-        (this->path) += String(DOWN);
+        (*this->path) += String(DOWN);
         dfs(r - 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(LEFT);
+        (*this->path) += String(LEFT);
         dfs(r, c - 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(RIGHT);
+        (*this->path) += String(RIGHT);
         dfs(r, c + 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(UP);
+        (*this->path) += String(UP);
         dfs(r + 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
     }
     else if (c < this->snakeList->get(0)->col)
     {
-        (this->path) += String(RIGHT);
+        (*this->path) += String(RIGHT);
         dfs(r, c + 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(DOWN);
+        (*this->path) += String(DOWN);
         dfs(r - 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(UP);
+        (*this->path) += String(UP);
         dfs(r + 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(LEFT);
+        (*this->path) += String(LEFT);
         dfs(r, c - 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
     }
     else
     {
 
-        (this->path) += String(LEFT);
+        (*this->path) += String(LEFT);
         dfs(r, c - 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(DOWN);
+        (*this->path) += String(DOWN);
         dfs(r - 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(UP);
+        (*this->path) += String(UP);
         dfs(r + 1, c);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
 
-        (this->path) += String(RIGHT);
+        (*this->path) += String(RIGHT);
         dfs(r, c + 1);
-        this->path = (this->path.substring(0, this->path.length() - 1));
+        (*this->path) = (this->path->substring(0, this->path->length() - 1));
     }
 }
 
@@ -216,11 +232,11 @@ void PathSearch::clear()
 
     this->ledMatrixBitMap->reset();
 
-    this->path = "";
+    *this->path = "";
 
-    this->findPath = false;
+    *this->findPath = false;
 
-    this->result = "";
+    *this->result = "";
 
-    this->previousBitMapSum = 0;
+    *this->previousBitMapSum = 0;
 }

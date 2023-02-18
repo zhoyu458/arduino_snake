@@ -19,9 +19,8 @@ bool justAteFruit = false;
 PathSearch *ps = new PathSearch(
     fruit,
     &(snake->list),
-    bs,
-    "",
-    "");
+    bs
+ );
 void gameOver()
 {
   FastLED.clear();
@@ -170,104 +169,4 @@ void loop()
     }
   }
 
-  // Node *head = snake->list.get(0);
-
-  // int peekUp = snake->peek(head, UP);
-  // int peekDown = snake->peek(head, DOWN);
-  // int peekLeft = snake->peek(head, LEFT);
-  // int peekRight = snake->peek(head, RIGHT);
-
-  // if (snake->list.get(0)->row < fruit->row && snake->direction != DOWN)
-  // {
-  //   if (peekUp == HIT_NOTHING)
-  //   {
-  //     dir = UP;
-  //   }
-  //   else if (peekLeft == HIT_NOTHING && snake->direction != RIGHT)
-  //   {
-  //     dir = LEFT;
-  //   }
-  //   else if (peekRight == HIT_NOTHING && snake->direction != LEFT)
-  //   {
-  //     dir = RIGHT;
-  //   }
-  // }
-  // else if (snake->list.get(0)->row > fruit->row && snake->direction != UP)
-  // {
-
-  //   if (peekDown == HIT_NOTHING)
-  //   {
-  //     dir = DOWN;
-  //   }
-
-  //   else if (peekLeft == HIT_NOTHING && snake->direction != RIGHT)
-  //   {
-  //     dir = LEFT;
-  //   }
-  //   else if (peekRight == HIT_NOTHING && snake->direction != LEFT)
-  //   {
-  //     dir = RIGHT;
-  //   }
-  // }
-  // else if (snake->list.get(0)->col < fruit->col && snake->direction != LEFT)
-  // {
-
-  //   if (peekRight == HIT_NOTHING)
-  //   {
-  //     dir = RIGHT;
-  //   }
-  //   else if (peekUp == HIT_NOTHING && snake->direction != DOWN)
-  //   {
-  //     dir = UP;
-  //   }
-  //   else if (peekDown == HIT_NOTHING && snake->direction != UP)
-  //   {
-  //     dir = DOWN;
-  //   }
-  // }
-  // else
-  // {
-  //   if (peekLeft == HIT_NOTHING)
-  //   {
-  //     dir = LEFT;
-  //   }
-  //   else if (peekUp == HIT_NOTHING && snake->direction != DOWN)
-  //   {
-  //     dir = UP;
-  //   }
-  //   else if (peekRight == HIT_NOTHING && snake->direction != LEFT)
-  //   {
-  //     dir = RIGHT;
-  //   }
-  //   else
-  //   {
-  //     dir = DOWN;
-  //   }
-  // }
-
-  // snake->move(dir);
-
-  // int stu = snake->status(fruit);
-
-  // if (stu == HIT_WALL || stu == HIT_SELF)
-  // {
-  //   gameOver();
-  //   restart();
-  // }
-  // else if (stu == HIT_FRUIT)
-  // {
-
-  //   snake->eatFruit(fruit);
-
-  //   fruit->refresh(&(snake->list));
-
-  //   justAteFruit = true;
-  // }
-
-  // renderGame();
-
-  // if (!justAteFruit)
-  //   delay(speed);
-
-  // justAteFruit = false;
 }

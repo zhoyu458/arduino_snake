@@ -5,7 +5,7 @@ const int MAX_VOLTS = 5;
 const int MAX_AMPS = 500;
 const int LED_PIN = 7;
 const int NUM_LEDS = 256;
-const int SNAKE_MAX_SIZE = 30;
+const int SNAKE_MAX_SIZE = 5;
 const int ROWS = 16;
 const int COLS = 16;
 const int SNAKE_INIT_ROW = 7;
@@ -22,6 +22,6 @@ const char DOWN = 'd';
 const char LEFT = 'l';
 const char RIGHT = 'r';
 
-const int speed = 100;
+const int speed = 10;
 
 #endif
