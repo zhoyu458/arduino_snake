@@ -16,6 +16,8 @@ public:
 
 public:
     BitMapStorage(unsigned int size);
+    ~BitMapStorage();
+
 
     bool getNumberStatus(unsigned int num);
 

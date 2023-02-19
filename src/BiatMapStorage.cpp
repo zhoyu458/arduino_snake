@@ -12,7 +12,11 @@ BitMapStorage::BitMapStorage(unsigned int size)
 
  
 }
+BitMapStorage::~BitMapStorage(){
+     delete this->bitMapArray;
+     this->bitMapArray = NULL;
 
+}
 bool BitMapStorage::getNumberStatus(unsigned int num)
 {
 
