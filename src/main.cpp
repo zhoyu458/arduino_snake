@@ -13,9 +13,11 @@
 
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
-Node *fruit = new Node(ROWS- 1, COLS-1, 0, 1, 0);
+Node *fruit = new Node(ROWS - 1, COLS - 1, 0, 1, 0);
 CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
+
+
 
 void gameOver()
 {
@@ -80,14 +82,15 @@ void setup()
   snake->addToTail(new Node(SNAKE_INIT_ROW, SNAKE_INIT_COL));
 }
 
+PathSearch *ps = new PathSearch(
+    fruit,
+    snake->list);
+
 void loop()
 {
 
   // Serial.println(freeMemory());
-
-  PathSearch *ps = new PathSearch(
-      fruit,
-      snake->list);
+  // test();
 
   char dir = UP;
 
@@ -102,13 +105,8 @@ void loop()
     // no path was found, snake will never eat a fruit
     if (stu == HIT_WALL || stu == HIT_SELF)
     {
-      delete ps;
-      ps = NULL;
-
-      delete snake;
-      snake = NULL;
-      snake = new Snake();
-
+      ps->clear();
+      snake->clear();
       snake->addToTail(new Node(1, 0));
       fruit->refresh(snake->list);
       gameOver();
@@ -155,9 +153,8 @@ void loop()
     }
   }
 
-  if (ps != NULL)
-  {
-    delete ps;
-    ps = NULL;
-  }
+  ps->clear();
 }
+
+
+

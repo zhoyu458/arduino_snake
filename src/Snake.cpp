@@ -10,13 +10,29 @@ Snake::Snake()
 
 Snake::~Snake()
 {
-
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        delete n;
+        n = NULL;
+    }
     this->list->clear();
     delete this->list;
     this->list = NULL;
 
     delete this->previousTail;
     this->previousTail = NULL;
+}
+
+void Snake::clear()
+{
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        delete n;
+        n = NULL;
+    }
+    this->list->clear();
 }
 
 void Snake::move(char dir)
@@ -216,7 +232,8 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
         {
             this->move(RIGHT);
         }
-    }else  if (this->direction == DOWN)
+    }
+    else if (this->direction == DOWN)
     {
         if (this->canGoDown())
         {
@@ -230,7 +247,8 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
         {
             this->move(RIGHT);
         }
-    } else if (this->direction == LEFT)
+    }
+    else if (this->direction == LEFT)
     {
         if (this->canGoLeft())
         {
@@ -244,7 +262,8 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
         {
             this->move(DOWN);
         }
-    } else if (this->direction == RIGHT)
+    }
+    else if (this->direction == RIGHT)
     {
         if (this->canGoRight())
         {

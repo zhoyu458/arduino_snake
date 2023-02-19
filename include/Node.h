@@ -28,7 +28,6 @@ class Node {
 
     void deepCopy(Node *node);
     void deepCopyPosition(Node *node);
-
     void deepCopyColor(Node *node);
 
 

@@ -18,6 +18,7 @@ public:
   void eatFruit(Node *);
   int status(Node *);
   void print();
+  void clear();
   int peek(Node *n, char dir);
   bool HitSelfSideCheckOk(char dir);
   void guideMoveWithNoPathFound(Node *fruit);

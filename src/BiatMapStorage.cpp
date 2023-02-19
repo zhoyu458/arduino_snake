@@ -76,7 +76,7 @@ void BitMapStorage::printBitMapbyNumber(unsigned int num)
 void BitMapStorage::reset(){
        for (unsigned int i = 0; i < this->size; i++)
     {
-        this->bitMapArray[i] = 0;
+        *(this->bitMapArray+i) = 0;
     }
 }
 

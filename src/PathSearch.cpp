@@ -58,7 +58,6 @@ String PathSearch::getPath()
 
 void PathSearch::dfs(int r, int c)
 {
-    Serial.println(freeMemory());
 
     if (freeMemory() < MemoryLowerLimit)
     {

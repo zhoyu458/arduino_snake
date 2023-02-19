@@ -8,6 +8,8 @@ Node::Node()
     this->blue = 0;
 }
 
+
+
 Node::Node(int r, int c)
 {
     this->row = r;
