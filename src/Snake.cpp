@@ -3,12 +3,13 @@
 
 Snake::Snake()
 {
-    this->list = new LinkedList<Node *> ();
+    this->list = new LinkedList<Node *>();
     this->direction = UP;
     this->previousTail = new Node();
 }
 
- Snake::~Snake(){
+Snake::~Snake()
+{
 
     this->list->clear();
     delete this->list;
@@ -16,7 +17,7 @@ Snake::Snake()
 
     delete this->previousTail;
     this->previousTail = NULL;
- }
+}
 
 void Snake::move(char dir)
 {
@@ -59,27 +60,12 @@ void Snake::addToTail(Node *n)
 
 int Snake::status(Node *fruit)
 {
-    Node *head = this->list->get(0);
-    if (head->row < 0 || head->row > ROWS)
-    {
-        return HIT_WALL;
-    }
-    if (head->col < 0 || head->col > COLS)
-    {
 
-        return HIT_WALL;
-    }
-    // check if the snake hit itself
-    int size = this->list->size();
-    for (int i = 1; i < size - 1; i++)
-    {
-        Node *n = this->list->get(i);
-        if (head->row == n->row && head->col == n->col)
-        {
-            return HIT_SELF;
-        }
-    }
+    if(this->hasHitWall()) return HIT_WALL;
 
+    if(this->hasHitSelf()) return HIT_SELF;
+
+    Node* head = this->list->get(0);
     if (head->row == fruit->row && head->col == fruit->col)
         return HIT_FRUIT;
     return HIT_NOTHING;
@@ -87,7 +73,6 @@ int Snake::status(Node *fruit)
 
 void Snake::eatFruit(Node *fruit)
 {
-
 
     if (this->list->size() < SNAKE_MAX_SIZE)
     {
@@ -98,7 +83,7 @@ void Snake::eatFruit(Node *fruit)
         Node *head = this->list->get(0);
         // udpate head color
         head->deepCopyColor(fruit);
- 
+
         // add to new node to the tail
         Node *newNode = new Node();
 
@@ -112,11 +97,6 @@ void Snake::eatFruit(Node *fruit)
         head->green = fruit->green;
         head->blue = fruit->blue;
     }
-
-
-
-    
-
 }
 
 void Snake::print()
@@ -327,6 +307,36 @@ bool Snake::canGoRight()
     int r = this->list->get(0)->row;
     int c = this->list->get(0)->col;
     return (!this->willHitWall(r, c + 1) && !this->willHitSelf(r, c + 1));
+}
+
+bool Snake::hasHitWall()
+{
+    Node *head = this->list->get(0);
+
+    if (head->row < 0 || head->row > ROWS)
+        return true;
+    if (head->col < 0 || head->col > COLS)
+        return true;
+
+    return false;
+}
+
+bool Snake::hasHitSelf()
+{
+
+    Node *head = this->list->get(0);
+
+    for (int i = 1; i < this->list->size() - 1; i++)
+    {
+        Node *n = this->list->get(i);
+
+        if (head->row == n->row && head->col == n->col)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
