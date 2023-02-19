@@ -12,8 +12,7 @@
 #include "BitMapStorage.h"
 
 /*----------------------GAME VARIABLE-----------------------------*/
-LinkedList<Node*>* snakeList = new LinkedList<Node*>();
-Snake *snake = new Snake(snakeList);
+Snake *snake = new Snake();
 Node *fruit = new Node(8, 0, 0, 1, 0);
 BitMapStorage *bs = new BitMapStorage(NUM_LEDS);
 CRGB leds[NUM_LEDS];
@@ -110,23 +109,20 @@ void loop()
     snake->guideMoveWithNoPathFound(fruit);
     int stu = snake->status(fruit);
 
-
     // no path was found, snake will never eat a fruit
     if (stu == HIT_WALL || stu == HIT_SELF)
     {
       delete ps;
       ps = NULL;
 
-      snake->list->clear();
-      delete snake->list;
-      snake->list = new LinkedList<Node*>();
-      
+      delete snake;
+      snake = new Snake();
+
       gameOver();
       restart();
     }
 
     renderGame();
-
   }
   else // dfs found a route
   {
@@ -145,9 +141,9 @@ void loop()
       snake->move(dir);
 
       int stu = snake->status(fruit);
-    // path was found, snake will eat a fruit and will not hit self or wall
+      // path was found, snake will eat a fruit and will not hit self or wall
 
-    if (stu == HIT_FRUIT)
+      if (stu == HIT_FRUIT)
       {
 
         snake->eatFruit(fruit);
@@ -155,23 +151,21 @@ void loop()
         fruit->refresh(snake->list);
 
         justAteFruit = true;
-
       }
 
       renderGame();
 
       if (!justAteFruit)
+      {
         delay(speed);
+      }
       justAteFruit = false;
-
     }
   }
 
-  if(ps!=NULL){
+  if (ps != NULL)
+  {
     delete ps;
     ps = NULL;
-
-    }
-
-
+  }
 }

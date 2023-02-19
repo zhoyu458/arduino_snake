@@ -14,7 +14,7 @@ class Snake {
 
   public:
 
-    Snake(LinkedList<Node *>* snakeList);
+    Snake();
     ~Snake();
     void move(char dir);
     void addToTail(Node*);

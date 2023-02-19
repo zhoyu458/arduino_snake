@@ -1,14 +1,16 @@
 #include "Snake.h"
 #include "Constant.h"
 
-Snake::Snake(LinkedList<Node *> *snakeList)
+Snake::Snake()
 {
+    this->list = new LinkedList<Node *> ();
     this->direction = UP;
-    this->list = snakeList;
     this->previousTail = new Node();
 }
 
  Snake::~Snake(){
+
+    this->list->clear();
     delete this->list;
     this->list = NULL;
 
