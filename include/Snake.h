@@ -8,19 +8,32 @@
 class Snake {
   public:
     char direction;
-    LinkedList<Node*> list;
+    LinkedList<Node*>* list;
+    Node* previousTail; // the variblbe keeps tracking the tail node before eating a fruit,for smoothing action of eating a fruit.
 
 
   public:
 
-    Snake();
+    Snake(LinkedList<Node *>* snakeList);
+    ~Snake();
     void move(char dir);
-    void add(Node*);
+    void addToTail(Node*);
     void eatFruit(Node*);
     int status(Node*);
     void print();
     int peek(Node* n, char dir);
     bool HitSelfSideCheckOk( char dir);
+    void guideMoveWithNoPathFound(Node* fruit);
+    bool willHitWall(int r, int c);
+    bool willHitSelf(int r, int c);
+
+    bool canGoUp();
+    bool canGoDown();
+    bool canGoLeft();
+    bool canGoRight();
+
+
+
 
    
 

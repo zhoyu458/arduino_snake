@@ -22,7 +22,6 @@ PathSearch::PathSearch(
 PathSearch::~PathSearch()
 {
 
-    Serial.println("~");
     // delete fruit;
     // delete snakeList;
     // delete ledMatrixBitMap;
@@ -42,12 +41,11 @@ PathSearch::~PathSearch()
 
 String PathSearch::getPath()
 {
-
     // -------------- prepare for DFS---------------------------/
     this->clear();
 
     // doing the same to the snake
-    for (int i = 2; i < this->snakeList->size(); i++)
+    for (int i = 1; i < this->snakeList->size(); i++)
     {
         Node *n = this->snakeList->get(i);
         int snakeNum = calcLedNumberFromNode(n);
@@ -61,6 +59,14 @@ String PathSearch::getPath()
 
 void PathSearch::dfs(int r, int c)
 {
+    Serial.println(freeMemory());
+
+    if (freeMemory() < MemoryLowerLimit)
+    {
+        // if it is going to run out of memory, then stop the dfs, and return
+        *this->findPath = true;
+        return;
+    }
 
     if (*this->findPath == true)
         return;
@@ -210,9 +216,10 @@ bool PathSearch::hitWall(int r, int c)
 
 bool PathSearch::hitSnakeBody(int r, int c)
 {
-
-    // index start from one to skip the sanke head
-    for (int i = 1; i < this->snakeList->size(); i++)
+    if (this->snakeList->size() < 4)
+        return false;
+    // head will never hit 2nd, 3rd and 4th part of its body
+    for (int i = 4; i < this->snakeList->size(); i++)
     {
         Node *n = this->snakeList->get(i);
         if (n->row == r && n->col == c)

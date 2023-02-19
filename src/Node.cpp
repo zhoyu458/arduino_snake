@@ -13,7 +13,7 @@ Node::Node(int r, int c)
     this->row = r;
     this->col = c;
     this->red = 0;
-    this->green = 1;
+    this->green = 0;
     this->blue = 1;
 }
 
@@ -40,7 +40,7 @@ void Node::reposition()
 void Node::recolor()
 {
     this->red = random(12) + 1;
-    this->green = random(6)+ 1;
+    this->green = random(6) + 1;
     this->blue = random(6) + 1;
 }
 
@@ -60,7 +60,6 @@ void Node::refresh(LinkedList<Node *> *list)
         // Serial.print("  ");
         // Serial.println(this->col);
 
-
         for (int i = 0; i < size; i++)
         {
             Node *n = list->get(i);
@@ -71,9 +70,12 @@ void Node::refresh(LinkedList<Node *> *list)
             }
         }
 
-        if(this->row == list->get(0)->row || this->row == list->get(0)->col ) continue;
+        if (this->row == list->get(0)->row || this->row == list->get(0)->col)
+            continue;
 
-        if(!canRefresh) continue;;
+        if (!canRefresh)
+            continue;
+        ;
 
         if (canRefresh)
         {
@@ -81,4 +83,25 @@ void Node::refresh(LinkedList<Node *> *list)
             return;
         }
     }
+}
+
+void Node::deepCopy(Node *n)
+{
+    this->deepCopyPosition(n);
+    this->deepCopyColor(n);
+
+}
+
+void Node::deepCopyPosition(Node *n)
+{
+    this->row = n->row;
+    this->col = n->col;
+}
+
+void Node::deepCopyColor(Node *n)
+{
+
+    this->red = n->red;
+    this->green = n->green;
+    this->blue = n->blue;
 }

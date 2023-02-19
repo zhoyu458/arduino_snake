@@ -26,6 +26,12 @@ class Node {
 
     void refresh(LinkedList<Node*>* list);
 
+    void deepCopy(Node *node);
+    void deepCopyPosition(Node *node);
+
+    void deepCopyColor(Node *node);
+
+
 };
 
 

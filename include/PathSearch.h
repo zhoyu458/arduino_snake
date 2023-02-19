@@ -4,6 +4,7 @@
 #include "Node.h"
 #include "BitMapStorage.h"
 #include <LinkedList.h>
+#include<MemoryFree.h>
 
 class PathSearch
 {
