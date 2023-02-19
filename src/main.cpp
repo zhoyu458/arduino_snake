@@ -14,7 +14,6 @@
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
 Node *fruit = new Node(8, 0, 0, 1, 0);
-BitMapStorage *bs = new BitMapStorage(NUM_LEDS);
 CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
 
@@ -96,8 +95,7 @@ void loop()
 
   PathSearch *ps = new PathSearch(
       fruit,
-      snake->list,
-      bs);
+      snake->list);
 
   char dir = UP;
 
@@ -116,6 +114,7 @@ void loop()
       ps = NULL;
 
       delete snake;
+      snake = NULL;
       snake = new Snake();
 
       gameOver();
@@ -157,7 +156,7 @@ void loop()
 
       if (!justAteFruit)
       {
-        delay(speed);
+        delay(gameSpeed);
       }
       justAteFruit = false;
     }

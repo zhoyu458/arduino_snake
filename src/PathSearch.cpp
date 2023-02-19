@@ -4,17 +4,20 @@
 
 PathSearch::PathSearch(
     Node *fruit,
-    LinkedList<Node *> *snakeList,
-    BitMapStorage *ledMatrixBitMap)
+    LinkedList<Node *> *snakeList)
 {
     this->fruit = fruit;
     this->snakeList = snakeList;
-    this->ledMatrixBitMap = ledMatrixBitMap;
+
+    // declare all pointers
+    this->ledMatrixBitMap = new BitMapStorage(NUM_LEDS);
     this->path = new String();
     this->result = new String();
-    this->previousBitMapSum = 0;
     this->findPath = new boolean();
     this->previousBitMapSum = new unsigned int();
+
+    *this->path = "";
+    *this->result = "";
     *this->findPath = false;
     *this->previousBitMapSum = 0;
 }
@@ -22,17 +25,13 @@ PathSearch::PathSearch(
 PathSearch::~PathSearch()
 {
 
-    // delete fruit;
-    // delete snakeList;
-    // delete ledMatrixBitMap;
+    delete ledMatrixBitMap;
     delete path;
     delete result;
     delete findPath;
     delete previousBitMapSum;
 
-    // fruit = NULL;
-    // snakeList = NULL;
-    // ledMatrixBitMap = NULL;
+    ledMatrixBitMap = NULL;
     path = NULL;
     result = NULL;
     findPath = NULL;

@@ -4,27 +4,25 @@
 #include "Node.h"
 #include "BitMapStorage.h"
 #include <LinkedList.h>
-#include<MemoryFree.h>
+#include <MemoryFree.h>
 
 class PathSearch
 {
 public:
     Node *fruit;
     LinkedList<Node *> *snakeList;
-    BitMapStorage *ledMatrixBitMap;        
+    BitMapStorage *ledMatrixBitMap;
     String *path;
     String *result;
     bool *findPath;
-    unsigned int* previousBitMapSum;// the varibale is used to check if dfs search fails by compare previousSum with current sum , if no chang, then dfs could not find an answer.
+    unsigned int *previousBitMapSum; // the varibale is used to check if dfs search fails by compare previousSum with current sum , if no chang, then dfs could not find an answer.
 
 public:
     PathSearch();
     PathSearch(
         Node *fruit,
-        LinkedList<Node *> *snakeList,
-        BitMapStorage *ledMatrixBitMap
-        );
-        
+        LinkedList<Node *> *snakeList);
+
     ~PathSearch();
     String getPath();
 

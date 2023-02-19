@@ -10,7 +10,6 @@ const int ROWS = 32;
 const int COLS = 16;
 const int SNAKE_INIT_ROW = 7;
 const int SNAKE_INIT_COL = 7;
-const int gameSpeed = 1000;
 
 const int HIT_WALL = 0;
 const int HIT_SELF = 0;
@@ -22,8 +21,9 @@ const char DOWN = 'd';
 const char LEFT = 'l';
 const char RIGHT = 'r';
 
-const int speed = 100;
 
-const int MemoryLowerLimit = 300;
+const int MemoryLowerLimit = 500;
+const int gameSpeed = 1000;
+
 
 #endif
