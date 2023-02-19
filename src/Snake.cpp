@@ -61,11 +61,13 @@ void Snake::addToTail(Node *n)
 int Snake::status(Node *fruit)
 {
 
-    if(this->hasHitWall()) return HIT_WALL;
+    if (this->hasHitWall())
+        return HIT_WALL;
 
-    if(this->hasHitSelf()) return HIT_SELF;
+    if (this->hasHitSelf())
+        return HIT_SELF;
 
-    Node* head = this->list->get(0);
+    Node *head = this->list->get(0);
     if (head->row == fruit->row && head->col == fruit->col)
         return HIT_FRUIT;
     return HIT_NOTHING;
@@ -200,55 +202,61 @@ bool Snake::HitSelfSideCheckOk(char dir)
 void Snake::guideMoveWithNoPathFound(Node *fruit)
 {
 
-    Node *head = this->list->get(0);
-
     if (this->direction == UP)
-    { // exclude DOWN
-        if (head->row < fruit->row and this->canGoUp())
+    {
+        if (this->canGoUp())
+        {
             this->move(UP);
-        else
-        {
-            if (canGoLeft())
-                this->move(LEFT);
-            else
-                this->move(RIGHT);
         }
-    }
-    else if (this->direction == DOWN)
-    { // exclude UP
-        if (head->row > fruit->row and this->canGoDown())
-            this->move(DOWN);
-        else
+        else if (this->canGoLeft())
         {
-            if (canGoLeft())
-                this->move(LEFT);
-            else
-                this->move(RIGHT);
-        }
-    }
-    else if (this->direction == LEFT)
-    { // exclude RIGHT
-        if (head->col > fruit->col and this->canGoLeft())
             this->move(LEFT);
-        else
-        {
-            if (canGoUp())
-                this->move(UP);
-            else
-                this->move(DOWN);
         }
-    }
-    else if (this->direction == RIGHT)
-    { // exclude LEFT
-
-        if (head->col < fruit->col and this->canGoRight())
-            this->move(RIGHT);
         else
         {
-            if (canGoUp())
-                this->move(UP);
-            else
-                this->move(DOWN);
+            this->move(RIGHT);
+        }
+    }else  if (this->direction == DOWN)
+    {
+        if (this->canGoDown())
+        {
+            this->move(DOWN);
+        }
+        else if (this->canGoLeft())
+        {
+            this->move(LEFT);
+        }
+        else
+        {
+            this->move(RIGHT);
+        }
+    } else if (this->direction == LEFT)
+    {
+        if (this->canGoLeft())
+        {
+            this->move(LEFT);
+        }
+        else if (this->canGoUp())
+        {
+            this->move(UP);
+        }
+        else
+        {
+            this->move(DOWN);
+        }
+    } else if (this->direction == RIGHT)
+    {
+        if (this->canGoRight())
+        {
+            this->move(RIGHT);
+        }
+        else if (this->canGoUp())
+        {
+            this->move(UP);
+        }
+        else
+        {
+            this->move(DOWN);
         }
     }
 }
@@ -338,5 +346,3 @@ bool Snake::hasHitSelf()
 
     return false;
 }
-
-

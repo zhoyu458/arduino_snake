@@ -13,7 +13,7 @@
 
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
-Node *fruit = new Node(8, 0, 0, 1, 0);
+Node *fruit = new Node(ROWS- 1, COLS-1, 0, 1, 0);
 CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
 
@@ -63,14 +63,6 @@ void renderGame()
   FastLED.show();
 }
 
-void restart()
-{
-  snake->list->clear();
-
-  snake->addToTail(new Node(1, 0));
-  fruit->refresh(snake->list);
-}
-
 void pause()
 {
   while (1)
@@ -85,7 +77,7 @@ void setup()
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
   // FastLED.setMaxPowerInVoltsAndMilliamps(MAX_VOLTS, MAX_AMPS);
   randomSeed(analogRead(A0));
-  snake->addToTail(new Node(1, 0));
+  snake->addToTail(new Node(SNAKE_INIT_ROW, SNAKE_INIT_COL));
 }
 
 void loop()
@@ -117,8 +109,9 @@ void loop()
       snake = NULL;
       snake = new Snake();
 
+      snake->addToTail(new Node(1, 0));
+      fruit->refresh(snake->list);
       gameOver();
-      restart();
     }
 
     renderGame();
