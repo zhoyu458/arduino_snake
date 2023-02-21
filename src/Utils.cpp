@@ -36,6 +36,7 @@ int* calcCoordinateFromLedNum(int num)
 }
 
 String reverseString(String inStr){
+
     String res = "";
     for(int i = inStr.length() - 1; i >= 0; i--){
         res += inStr.charAt(i);
@@ -43,3 +44,5 @@ String reverseString(String inStr){
 
     return res;
 }
+
+

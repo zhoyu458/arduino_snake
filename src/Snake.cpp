@@ -365,3 +365,19 @@ bool Snake::hasHitSelf()
 
     return false;
 }
+
+bool leftCrossCheckOk(Node *n)
+{
+}
+
+bool rightCrossCheckOk(Node *n)
+{
+}
+
+bool upCrossCheckOk(Node *n)
+{
+}
+
+bool downCrossCheckOk(Node *n)
+{
+}

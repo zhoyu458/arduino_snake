@@ -32,6 +32,18 @@ public:
   bool canGoDown();
   bool canGoLeft();
   bool canGoRight();
+
+  // the crosscheck is to prevent snake end up with dead end, in other word, snake will hit itself.
+  // after having a fruit. However, fruit node will get passed
+  // into the function, because DFS search start with fruit find snake head
+  // The check is not checking hit wall situation
+  bool leftCrossCheckOk(Node *n);
+
+  bool rightCrossCheckOk(Node *n);
+
+  bool upCrossCheckOk(Node *n);
+
+  bool downCrossCheckOk(Node *n);
 };
 
 #endif
