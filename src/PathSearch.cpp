@@ -245,3 +245,5 @@ void PathSearch::clear()
 
     *this->previousBitMapSum = 0;
 }
+
+

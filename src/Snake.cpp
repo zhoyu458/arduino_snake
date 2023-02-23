@@ -74,6 +74,11 @@ void Snake::addToTail(Node *n)
     this->list->add(this->list->size(), n);
 }
 
+void Snake::addToHead(Node *n)
+{
+    this->list->add(n);
+}
+
 int Snake::status(Node *fruit)
 {
 
@@ -217,14 +222,13 @@ bool Snake::HitSelfSideCheckOk(char dir)
 
 void Snake::guideMoveWithNoPathFound(Node *fruit)
 {
-
     if (this->direction == UP)
     {
-        if (this->canGoUp())
+        if (!this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
-        else if (this->canGoLeft())
+        else if (!this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
@@ -235,11 +239,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == DOWN)
     {
-        if (this->canGoDown())
+        if (!this->downCrossWillHitSelf())
         {
             this->move(DOWN);
         }
-        else if (this->canGoLeft())
+        else if (!this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
@@ -250,11 +254,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == LEFT)
     {
-        if (this->canGoLeft())
+        if (!this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
-        else if (this->canGoUp())
+        else if (!this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
@@ -265,11 +269,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == RIGHT)
     {
-        if (this->canGoRight())
+        if (!this->rightCrossWillHitSelf())
         {
             this->move(RIGHT);
         }
-        else if (this->canGoUp())
+        else if (!this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
@@ -278,6 +282,67 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
             this->move(DOWN);
         }
     }
+
+    // if (this->direction == UP)
+    // {
+    //     if (this->canGoUp())
+    //     {
+    //         this->move(UP);
+    //     }
+    //     else if (this->canGoLeft())
+    //     {
+    //         this->move(LEFT);
+    //     }
+    //     else
+    //     {
+    //         this->move(RIGHT);
+    //     }
+    // }
+    // else if (this->direction == DOWN)
+    // {
+    //     if (this->canGoDown())
+    //     {
+    //         this->move(DOWN);
+    //     }
+    //     else if (this->canGoLeft())
+    //     {
+    //         this->move(LEFT);
+    //     }
+    //     else
+    //     {
+    //         this->move(RIGHT);
+    //     }
+    // }
+    // else if (this->direction == LEFT)
+    // {
+    //     if (this->canGoLeft())
+    //     {
+    //         this->move(LEFT);
+    //     }
+    //     else if (this->canGoUp())
+    //     {
+    //         this->move(UP);
+    //     }
+    //     else
+    //     {
+    //         this->move(DOWN);
+    //     }
+    // }
+    // else if (this->direction == RIGHT)
+    // {
+    //     if (this->canGoRight())
+    //     {
+    //         this->move(RIGHT);
+    //     }
+    //     else if (this->canGoUp())
+    //     {
+    //         this->move(UP);
+    //     }
+    //     else
+    //     {
+    //         this->move(DOWN);
+    //     }
+    // }
 }
 
 bool Snake::willHitWall(int r, int c)
@@ -300,7 +365,7 @@ bool Snake::willHitSelf(int r, int c)
         return false;
 
     // head will never hit 2nd, 3rd and 4th part of its body
-    for (int i = 4; i < this->list->size(); i++)
+    for (int i = 1; i < this->list->size(); i++)
     {
         Node *n = this->list->get(i);
         if (n->row == r && n->col == c)
@@ -366,18 +431,165 @@ bool Snake::hasHitSelf()
     return false;
 }
 
-bool leftCrossCheckOk(Node *n)
+bool Snake::leftCrossWillHitSelf()
 {
+    Node *head = this->list->get(0);
+
+    // left check is col--
+    int r = head->row;
+
+    int c = head->col;
+    c--; // do not check the head itself
+
+    while (c >= 0)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        c--;
+    }
+    return false;
 }
 
-bool rightCrossCheckOk(Node *n)
+bool Snake::rightCrossWillHitSelf()
 {
+
+    Node *head = this->list->get(0);
+
+    // right check is col++
+    int r = head->row;
+    int c = head->col;
+    c++; // do not check the head itself
+    while (c < COLS)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        c++;
+    }
+    return false;
 }
 
-bool upCrossCheckOk(Node *n)
+bool Snake::upCrossWillHitSelf()
 {
+
+    Node *head = this->list->get(0);
+
+    // up check is row++
+    int r = head->row;
+    int c = head->col;
+    r++; // do not check the head itself
+
+    while (r < ROWS)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        r++;
+    }
+    return false;
 }
 
-bool downCrossCheckOk(Node *n)
+bool Snake::downCrossWillHitSelf()
+
 {
+    Node *head = this->list->get(0);
+    // right check is row--
+    int r = head->row;
+    int c = head->col;
+    r--; // do not check the head itself
+    while (r >= 0)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        r--;
+    }
+    return false;
+}
+
+int Snake::getBodyCountOnUpperHalf()
+{
+    int count = 0;
+    int upperBoundary = ROWS - 1;
+    int lowerBoundary = ROWS / 2;
+
+    Serial.print("upperBoundary:");
+    Serial.println(upperBoundary);
+    Serial.print("lowerBoundary:");
+    Serial.println(lowerBoundary);
+
+    this->print();
+
+    Serial.println("-------SNAKE INFO IS ABOVE--------------------");
+
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int r = n->row;
+        if (r >= lowerBoundary && r <= upperBoundary)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+int Snake::getBodyCountOnLowerHalf()
+{
+
+    int count = 0;
+    int upperBoundary = ROWS / 2;
+    int lowerBoundary = 0;
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int r = n->row;
+        if (r >= lowerBoundary && r < upperBoundary)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+int Snake::getBodyCountOnLeftHalf()
+{
+
+    int count = 0;
+    int leftBoundary = 0;
+    int rightBoundary = COLS / 2;
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int c = n->col;
+        if (c >= leftBoundary && c <= rightBoundary)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+int Snake::getBodyCountOnRightHalf()
+{
+
+    int count = 0;
+    int leftBoundary = COLS / 2;
+    int rightBoundary = COLS - 1;
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int c = n->col;
+        if (c > leftBoundary && c <= rightBoundary)
+        {
+            count++;
+        }
+    }
+
+    return count;
 }
