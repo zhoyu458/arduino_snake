@@ -224,11 +224,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
 {
     if (this->direction == UP)
     {
-        if (!this->upCrossWillHitSelf())
+        if (this->canGoUp() and !this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
-        else if (!this->leftCrossWillHitSelf())
+        else if (this->canGoLeft() and !this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
@@ -239,11 +239,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == DOWN)
     {
-        if (!this->downCrossWillHitSelf())
+        if (this->canGoDown() and !this->downCrossWillHitSelf())
         {
             this->move(DOWN);
         }
-        else if (!this->leftCrossWillHitSelf())
+        else if (this->canGoLeft() and !this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
@@ -254,11 +254,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == LEFT)
     {
-        if (!this->leftCrossWillHitSelf())
+        if (this->canGoLeft() and !this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
-        else if (!this->upCrossWillHitSelf())
+        else if ( this->canGoUp() and !this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
@@ -269,11 +269,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == RIGHT)
     {
-        if (!this->rightCrossWillHitSelf())
+        if (this->canGoRight() and!this->rightCrossWillHitSelf())
         {
             this->move(RIGHT);
         }
-        else if (!this->upCrossWillHitSelf())
+        else if (this->canGoUp() and !this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
@@ -519,17 +519,19 @@ int Snake::getBodyCountOnUpperHalf()
     Serial.print("lowerBoundary:");
     Serial.println(lowerBoundary);
 
-    this->print();
-
-    Serial.println("-------SNAKE INFO IS ABOVE--------------------");
-
-
     for (int i = 0; i < this->list->size(); i++)
     {
         Node *n = this->list->get(i);
         int r = n->row;
+        int c = n->col;
+
         if (r >= lowerBoundary && r <= upperBoundary)
         {
+            Serial.print("<");
+            Serial.print(r);
+            Serial.print("  ");
+            Serial.print(c);
+            Serial.println("> is included");
             count++;
         }
     }

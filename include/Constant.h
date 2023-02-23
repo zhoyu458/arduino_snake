@@ -23,7 +23,7 @@ const char RIGHT = 'r';
 
 
 const int MemoryLowerLimit = 300;
-const int gameSpeed = 1000;
+const int gameSpeed = 10;
 
 
 #endif

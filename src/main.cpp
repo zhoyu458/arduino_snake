@@ -11,6 +11,8 @@
 #include "BitMapStorage.h"
 #include "FruitList.h"
 
+void copySnakeAction(String fruitToSnakeHeadPath);
+
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
 Node *fruit = new Node(ROWS - 1, COLS - 1, 0, 1, 0);
@@ -78,10 +80,10 @@ void setup()
   Serial.println("Program Start");
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
   // FastLED.setMaxPowerInVoltsAndMilliamps(MAX_VOLTS, MAX_AMPS);
-  randomSeed(analogRead(A0));
+  randomSeed(analogRead(A0)* analogRead(A1));
   snake->addToTail(new Node(SNAKE_INIT_ROW, SNAKE_INIT_COL));
 
-  // Node* n = new Node(5,12);
+  // Node* n = new Node(0,0);
   // int num = calcLedNumberFromNode(n);
   // FastLED.clear();
   // leds[num] = CRGB(0,1,1);
@@ -111,11 +113,33 @@ void loop()
     // no path was found, snake will never eat a fruit
     if (stu == HIT_WALL || stu == HIT_SELF)
     {
+
+      Serial.println("reall snake: ");
+
+      int uc = snake->getBodyCountOnUpperHalf();
+      int ud = snake->getBodyCountOnLowerHalf();
+      int lc = snake->getBodyCountOnLeftHalf();
+      int rc = snake->getBodyCountOnRightHalf();
+
+      Serial.print("upper:");
+      Serial.println(uc);
+      Serial.print(" down:");
+      Serial.print(ud);
+      Serial.print(" left:");
+      Serial.print(lc);
+      Serial.print(" right:");
+      Serial.println(rc);
+
+      snake->print();
       ps->clear();
       snake->clear();
       snake->addToTail(new Node(1, 0));
       fruit->refresh(snake->list);
+
+      Serial.println("Game is over!!!!!!!!!!!!!!!!!!!!");
+
       pause();
+
       gameOver();
     }
 
@@ -123,78 +147,7 @@ void loop()
   }
   else // dfs found a route
   {
-    //-----------------------------------------------------------------------------//
-    // deep copy the snake,
-    // use the copy to run the path and check if it is running to dead end after eating the fruit
-
-    Snake *snakeCopy = new Snake();
-    for (int i = 0; i < snake->list->size(); i++)
-    {
-      Node *snakeSection = snake->list->get(i);
-      Node *copy = new Node();
-      copy->deepCopyPosition(snakeSection);
-      snakeCopy->addToTail(copy);
-    }
-
-    // the snakeCopy is running the path
-    for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
-    {
-      dir = fruitToSnakeHeadPath.charAt(i);
-      if (dir == UP)
-        dir = DOWN;
-      else if (dir == DOWN)
-        dir = UP;
-      else if (dir == LEFT)
-        dir = RIGHT;
-      else if (dir == RIGHT)
-        dir = LEFT;
-      snakeCopy->move(dir);
-    }
-
-    bool crossHitUp = snakeCopy->upCrossWillHitSelf();
-    bool crossHitDown = snakeCopy->downCrossWillHitSelf();
-    bool crossHitLeft = snakeCopy->leftCrossWillHitSelf();
-    bool crossHitRight = snakeCopy->rightCrossWillHitSelf();
-
-    // clear the snakeCopy, free all memory
-    snakeCopy->clear();
-    delete snakeCopy;
-    snakeCopy = NULL;
-
-    Serial.print("hitup:");
-    Serial.print(crossHitUp);
-    Serial.print("  hitdown:");
-    Serial.print(crossHitDown);
-    Serial.print("  hitleft:");
-    Serial.print(crossHitLeft);
-    Serial.print("  hitright:");
-    Serial.print(crossHitRight);
-    Serial.println("--------------------------");
-
-    if (crossHitUp and crossHitDown and crossHitLeft and crossHitRight)
-    {
-      // dead end is found, snake should not eat the fruit direct, detour route is needed
-      int upperCount = snake->getBodyCountOnUpperHalf();
-      int lowerCount = snake->getBodyCountOnLowerHalf();
-      int leftCount = snake->getBodyCountOnLeftHalf();
-      int rightCount = snake->getBodyCountOnRightHalf();
-
-      Serial.println("an dead end will be met");
-      Serial.print("upperCount:");
-      Serial.println(upperCount);
-
-      Serial.print("lowerCount:");
-      Serial.println(lowerCount);
-
-      Serial.print("leftCount:");
-      Serial.println(leftCount);
-
-      Serial.print("rightCount:");
-      Serial.println(rightCount);
-    }
-
-    // ----------------------------------------------------------------------//
-
+    // copySnakeAction(fruitToSnakeHeadPath);
     for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
     {
       dir = fruitToSnakeHeadPath.charAt(i);
@@ -208,9 +161,6 @@ void loop()
         dir = LEFT;
 
       snake->move(dir);
-      snake->print();
-      Serial.println("--------------------------------------------");
-
       int stu = snake->status(fruit);
       // path was found, snake will eat a fruit and will not hit self or wall
 
@@ -234,4 +184,78 @@ void loop()
     }
   }
   ps->clear();
+}
+
+void copySnakeAction(String fruitToSnakeHeadPath)
+{
+  //-----------------------------------------------------------------------------//
+  // deep copy the snake,
+  // use the copy to run the path and check if it is running to dead end after eating the fruit
+  char dir = UP;
+
+  Snake *snakeCopy = new Snake();
+  for (int i = 0; i < snake->list->size(); i++)
+  {
+    Node *snakeSection = snake->list->get(i);
+    Node *copy = new Node();
+    copy->deepCopyPosition(snakeSection);
+    snakeCopy->addToTail(copy);
+  }
+
+  // the snakeCopy is running the path
+  for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
+  {
+    dir = fruitToSnakeHeadPath.charAt(i);
+    if (dir == UP)
+      dir = DOWN;
+    else if (dir == DOWN)
+      dir = UP;
+    else if (dir == LEFT)
+      dir = RIGHT;
+    else if (dir == RIGHT)
+      dir = LEFT;
+    snakeCopy->move(dir);
+  }
+
+  bool crossHitUp = snakeCopy->upCrossWillHitSelf();
+  bool crossHitDown = snakeCopy->downCrossWillHitSelf();
+  bool crossHitLeft = snakeCopy->leftCrossWillHitSelf();
+  bool crossHitRight = snakeCopy->rightCrossWillHitSelf();
+
+  // clear the snakeCopy, free all memory
+  snakeCopy->clear();
+  delete snakeCopy;
+  snakeCopy = NULL;
+
+  Serial.print("hitup:");
+  Serial.print(crossHitUp);
+  Serial.print("  hitdown:");
+  Serial.print(crossHitDown);
+  Serial.print("  hitleft:");
+  Serial.print(crossHitLeft);
+  Serial.print("  hitright:");
+  Serial.print(crossHitRight);
+  Serial.println("--------------------------");
+
+  if (crossHitUp and crossHitDown and crossHitLeft and crossHitRight)
+  {
+    // dead end is found, snake should not eat the fruit direct, detour route is needed
+    int upperCount = snake->getBodyCountOnUpperHalf();
+    int lowerCount = snake->getBodyCountOnLowerHalf();
+    int leftCount = snake->getBodyCountOnLeftHalf();
+    int rightCount = snake->getBodyCountOnRightHalf();
+
+    Serial.println("an dead end will be met");
+    Serial.print("upperCount:");
+    Serial.println(upperCount);
+
+    Serial.print("lowerCount:");
+    Serial.println(lowerCount);
+
+    Serial.print("leftCount:");
+    Serial.println(leftCount);
+
+    Serial.print("rightCount:");
+    Serial.println(rightCount);
+  }
 }
