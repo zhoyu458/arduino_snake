@@ -45,23 +45,17 @@ void loop()
 void runGame()
 {
   char dir = UP;
-  String fruitToSnakeHeadPath = snake->getFruitToHeadPath(fruit);
-  if (fruitToSnakeHeadPath.length() != 0) // dfs found a route
+  String path = snake->getHeadToFruitPath(fruit);
+
+  if (path.length() != 0) // dfs found a route
   {
 
-    for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
+    for (int i = 0; i < path.length(); i++)
     {
-      dir = fruitToSnakeHeadPath.charAt(i);
-      if (dir == UP)
-        dir = DOWN;
-      else if (dir == DOWN)
-        dir = UP;
-      else if (dir == LEFT)
-        dir = RIGHT;
-      else if (dir == RIGHT)
-        dir = LEFT;
 
+      dir = path.charAt(i);
       snake->move(dir);
+
       int stu = snake->status(fruit);
       // path was found, snake will eat a fruit and will not hit self or wall
 

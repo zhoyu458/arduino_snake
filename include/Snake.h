@@ -67,8 +67,9 @@ public:
   int getBodyCountOnLeftHalf();
   int getBodyCountOnRightHalf();
 
-  String getTailToHeadPath(Node *fruit);
-  String getFruitToHeadPath(Node *fruit);
+  String pathParser(String inStr);
+  String getHeadToTailPath(Node *fruit);
+  String getHeadToFruitPath(Node *fruit);
   void dfs(Node *startNode, Node *endNode, BitMapStorage *bs, String *path, String *result, bool *findPath, unsigned int *previousBitSum);
 };
 

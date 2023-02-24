@@ -616,7 +616,32 @@ Node *Snake::getTail()
     return this->list->get(this->list->size() - 1);
 }
 
-String Snake::getTailToHeadPath(Node *fruit)
+String Snake::pathParser(String inStr)
+{
+    String result = "";
+    for (int i = inStr.length() - 1; i >= 0; i--)
+    {
+        if (inStr.charAt(i) == UP)
+        {
+            result += DOWN;
+        }
+        else if (inStr.charAt(i) == DOWN)
+        {
+            result += UP;
+        }
+        else if (inStr.charAt(i) == LEFT)
+        {
+            result += RIGHT;
+        }
+        else if (inStr.charAt(i) == RIGHT)
+        {
+            result += LEFT;
+        }
+    }
+
+    return result;
+}
+String Snake::getHeadToTailPath(Node *fruit)
 
 {
     // snake size is less then 5, it never hit it slef
@@ -651,10 +676,11 @@ String Snake::getTailToHeadPath(Node *fruit)
     dfs(&tailCopy, &headCopy, &bs, &path, &result, &findPath, &previousBitSum);
     bs.reset();
 
+    result = this->pathParser(result);
+
     return result;
 }
-
-String Snake::getFruitToHeadPath(Node *fruit)
+String Snake::getHeadToFruitPath(Node *fruit)
 {
     // snake size is less then 5, it never hit it slef
     String result = "";
@@ -680,6 +706,7 @@ String Snake::getFruitToHeadPath(Node *fruit)
 
     dfs(&fruitCopy, &headCopy, &bs, &path, &result, &findPath, &previousBitSum);
 
+    result = this->pathParser(result);
     return result;
 }
 void Snake::dfs(Node *tailCopy, Node *headCopy, BitMapStorage *bs, String *path, String *result, bool *findPath, unsigned int *previousBitSum)
