@@ -10,67 +10,19 @@
 #include "BitMapStorage.h"
 #include "FruitList.h"
 
+/*----------------------GAME FUNCTIONS-----------------------------*/
+void runGame2();
+void runGame();
+void renderSingleNode(Node *n);
+void renderGame();
+void pause();
+void gameOver();
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
 Node *fruit = new Node(ROWS - 1, COLS - 1, 0, 1, 0);
 CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
 FruitList *fruitList = new FruitList();
-
-void runGame2();
-void runGame();
-void gameOver()
-{
-  FastLED.clear();
-  for (int i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = CRGB(0, 1, 0);
-    FastLED.show();
-  }
-
-  for (int i = NUM_LEDS - 1; i >= 0; i--)
-  {
-    leds[i] = CRGB(0, 0, 0);
-    FastLED.show();
-  }
-  FastLED.clear();
-}
-
-void renderSingleNode(Node *n)
-{
-
-  FastLED.clear();
-
-  int num = calcLedNumberFromNode(n);
-
-  leds[num] = CRGB(n->red, n->green, n->blue);
-
-  FastLED.show();
-}
-
-void renderGame()
-{
-  FastLED.clear();
-  int size = snake->list->size();
-  for (int i = 0; i < size; i++)
-  {
-    Node *n = snake->list->get(i);
-    int num = calcLedNumberFromNode(n);
-    leds[num] = CRGB(n->red, n->green, n->blue);
-  }
-
-  int num = calcLedNumberFromNode(fruit);
-  leds[num] = CRGB(fruit->red, fruit->green, fruit->blue);
-
-  FastLED.show();
-}
-
-void pause()
-{
-  while (1)
-  {
-  };
-}
 
 void setup()
 {
@@ -82,10 +34,6 @@ void setup()
   snake->addToTail(new Node(SNAKE_INIT_ROW, SNAKE_INIT_COL));
 }
 
-// PathSearch *ps = new PathSearch(
-//     fruit,
-//     snake->list);
-
 void loop()
 {
 
@@ -93,6 +41,7 @@ void loop()
   runGame();
 }
 
+//--------------------------------FUNCTION DECLARATION----------------------------------------------//
 void runGame()
 {
   char dir = UP;
@@ -151,4 +100,57 @@ void runGame()
 
     renderGame();
   }
+}
+
+void renderSingleNode(Node *n)
+{
+
+  FastLED.clear();
+
+  int num = calcLedNumberFromNode(n);
+
+  leds[num] = CRGB(n->red, n->green, n->blue);
+
+  FastLED.show();
+}
+
+void renderGame()
+{
+  FastLED.clear();
+  int size = snake->list->size();
+  for (int i = 0; i < size; i++)
+  {
+    Node *n = snake->list->get(i);
+    int num = calcLedNumberFromNode(n);
+    leds[num] = CRGB(n->red, n->green, n->blue);
+  }
+
+  int num = calcLedNumberFromNode(fruit);
+  leds[num] = CRGB(fruit->red, fruit->green, fruit->blue);
+
+  FastLED.show();
+}
+
+void pause()
+{
+  while (1)
+  {
+  };
+}
+
+void gameOver()
+{
+  FastLED.clear();
+  for (int i = 0; i < NUM_LEDS; i++)
+  {
+    leds[i] = CRGB(0, 1, 0);
+    FastLED.show();
+  }
+
+  for (int i = NUM_LEDS - 1; i >= 0; i--)
+  {
+    leds[i] = CRGB(0, 0, 0);
+    FastLED.show();
+  }
+  FastLED.clear();
 }
