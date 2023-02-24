@@ -854,7 +854,67 @@ void Snake::dfs(Node *tailCopy, Node *headCopy, BitMapStorage *bs, String *path,
     }
 }
 
+void Snake::virtualRun(Snake *s, String *path)
+{
+    for (int i = 0; i < path->length(); i++)
+    {
+        s->move(path->charAt(i));
+    }
+}
+String Snake::planPath(Node *fruit, bool *interruptPath)
+{
+    String result = "";
+    String pathToFruit = this->getHeadToFruitPath(fruit);
+
+    Snake *copy = this->deepCopySnake();
+    copy->virtualRun(copy, &pathToFruit);
+
+    String pathToTail = copy->getHeadToTailPath(fruit);
+    delete copy;
+    copy = NULL;
+
+    // copy snake found a safe route to the fruit
+    if (pathToFruit.length() != 0 and pathToTail.length() != 0)
+    {
+        *interruptPath = false;
+        return pathToFruit;
+    }
+    // copy snake found a route to fruit but not safe, cannot see the tail
+    else if (pathToFruit.length() != 0 or pathToTail.length() == 0)
+    {
+        // real snake follow its tail
+        *interruptPath = true;
+        return this->getHeadToTailPath(fruit);
+    }
+    // copy snake can see the tail but not found the fruit
+    else if (pathToFruit.length() == 0 or pathToTail.length() != 0)
+    {
+        // real snake follow its tail
+        *interruptPath = true;
+        return this->getHeadToTailPath(fruit);
+    }
+    // copy snake cannot see tail and fruit
+    else if (pathToFruit.length() != 0 or pathToTail.length() != 0)
+    {
+        *interruptPath = true;
+        return this->getHeadToTailPath(fruit);
+    }
+
+    return result;
+}
+void Snake::checkPlanPath(Node *fruit, bool *interruptPath)
+{
+    // the function gurrantee each step is valid, not meet a dead ends
+    String p1 = this->getHeadToFruitPath(fruit);
+    String p2 = this->getHeadToTailPath(fruit);
+
+    if (p1.length() == 0 || p2.length() == 0)
+    {
+        *interruptPath = true;
+    }
+}
 Snake *Snake::deepCopySnake()
+
 {
 
     Snake *snakeCopy = new Snake();

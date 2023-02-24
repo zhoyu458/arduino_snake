@@ -25,6 +25,7 @@ bool justAteFruit = false;
 FruitList *fruitList = new FruitList();
 
 String snakePath = "";
+bool interruptPath = false;
 
 void setup()
 {
@@ -47,10 +48,16 @@ void loop()
 
 void runGame2()
 {
-  snakePath = snake->getHeadToFruitPath(fruit);
+  Serial.println(snake->list->size());
+  Serial.println(freeMemory());
+  Serial.println();
+
+  snakePath = snake->planPath(fruit, &interruptPath);
 
   for (int i = 0; i < snakePath.length(); i++)
   {
+    // interrupt occurs while snake is wandering, no route to the fruit or cannot see its tail
+
     snake->move(snakePath.charAt(i));
     int stu = snake->status(fruit);
     if (stu == HIT_WALL or stu == HIT_SELF)
@@ -74,6 +81,11 @@ void runGame2()
     justAteFruit = false;
 
     renderGame();
+
+    if (interruptPath == true)
+    {
+      break;
+    }
   }
 }
 
@@ -132,7 +144,6 @@ void gameOver()
 
 void runGame()
 {
-  char dir = UP;
   snakePath = snake->getHeadToFruitPath(fruit);
 
   if (snakePath.length() != 0) // dfs found a route
@@ -141,7 +152,7 @@ void runGame()
     for (int i = 0; i < snakePath.length(); i++)
     {
 
-      dir = snakePath.charAt(i);
+      char dir = snakePath.charAt(i);
       snake->move(dir);
 
       int stu = snake->status(fruit);

@@ -70,7 +70,13 @@ public:
   String pathParser(String inStr);
   String getHeadToTailPath(Node *fruit);
   String getHeadToFruitPath(Node *fruit);
+  String planPath(Node *fruit, bool *interrupt);
+
+  void virtualRun(Snake *s, String *path);
   void dfs(Node *startNode, Node *endNode, BitMapStorage *bs, String *path, String *result, bool *findPath, unsigned int *previousBitSum);
+  String getHeadToTargetPath(Node *target);
+
+  void checkPlanPath(Node *fruit, bool *interruptPath);
 };
 
 #endif
