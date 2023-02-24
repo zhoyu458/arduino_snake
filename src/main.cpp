@@ -7,11 +7,8 @@
 #include "Node.h"
 #include "Utils.h"
 #include "Snake.h"
-#include "PathSearch.h"
 #include "BitMapStorage.h"
 #include "FruitList.h"
-
-void copySnakeAction(String fruitToSnakeHeadPath);
 
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
@@ -20,7 +17,8 @@ CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
 FruitList *fruitList = new FruitList();
 
-void gameRun();
+void runGame2();
+void runGame();
 void gameOver()
 {
   FastLED.clear();
@@ -80,74 +78,28 @@ void setup()
   Serial.println("Program Start");
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
   // FastLED.setMaxPowerInVoltsAndMilliamps(MAX_VOLTS, MAX_AMPS);
-  randomSeed(analogRead(A0)* analogRead(A1));
+  randomSeed(analogRead(A0) * analogRead(A1));
   snake->addToTail(new Node(SNAKE_INIT_ROW, SNAKE_INIT_COL));
-
-  // Node* n = new Node(0,0);
-  // int num = calcLedNumberFromNode(n);
-  // FastLED.clear();
-  // leds[num] = CRGB(0,1,1);
-  // FastLED.show();
-
-  // pause();
 }
 
-PathSearch *ps = new PathSearch(
-    fruit,
-    snake->list);
+// PathSearch *ps = new PathSearch(
+//     fruit,
+//     snake->list);
 
 void loop()
 {
 
-  // Serial.println(freeMemory());
+  Serial.println(freeMemory());
+  runGame();
+}
 
+void runGame()
+{
   char dir = UP;
-
-  String fruitToSnakeHeadPath = ps->getPath();
-
-  // length is 0 means dfs does not find a route to get the fruit
-  if (fruitToSnakeHeadPath.length() == 0)
+  String fruitToSnakeHeadPath = snake->getFruitToHeadPath(fruit);
+  if (fruitToSnakeHeadPath.length() != 0) // dfs found a route
   {
-    snake->guideMoveWithNoPathFound(fruit);
-    int stu = snake->status(fruit);
-    // no path was found, snake will never eat a fruit
-    if (stu == HIT_WALL || stu == HIT_SELF)
-    {
 
-      Serial.println("reall snake: ");
-
-      int uc = snake->getBodyCountOnUpperHalf();
-      int ud = snake->getBodyCountOnLowerHalf();
-      int lc = snake->getBodyCountOnLeftHalf();
-      int rc = snake->getBodyCountOnRightHalf();
-
-      Serial.print("upper:");
-      Serial.println(uc);
-      Serial.print(" down:");
-      Serial.print(ud);
-      Serial.print(" left:");
-      Serial.print(lc);
-      Serial.print(" right:");
-      Serial.println(rc);
-
-      snake->print();
-      ps->clear();
-      snake->clear();
-      snake->addToTail(new Node(1, 0));
-      fruit->refresh(snake->list);
-
-      Serial.println("Game is over!!!!!!!!!!!!!!!!!!!!");
-
-      pause();
-
-      gameOver();
-    }
-
-    renderGame();
-  }
-  else // dfs found a route
-  {
-    // copySnakeAction(fruitToSnakeHeadPath);
     for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
     {
       dir = fruitToSnakeHeadPath.charAt(i);
@@ -183,79 +135,20 @@ void loop()
       justAteFruit = false;
     }
   }
-  ps->clear();
-}
-
-void copySnakeAction(String fruitToSnakeHeadPath)
-{
-  //-----------------------------------------------------------------------------//
-  // deep copy the snake,
-  // use the copy to run the path and check if it is running to dead end after eating the fruit
-  char dir = UP;
-
-  Snake *snakeCopy = new Snake();
-  for (int i = 0; i < snake->list->size(); i++)
+  else
   {
-    Node *snakeSection = snake->list->get(i);
-    Node *copy = new Node();
-    copy->deepCopyPosition(snakeSection);
-    snakeCopy->addToTail(copy);
-  }
+    snake->guideMoveWithNoPathFound(fruit);
+    int stu = snake->status(fruit);
+    // no path was found, snake will never eat a fruit
+    if (stu == HIT_WALL || stu == HIT_SELF)
+    {
+      // ps->clear();
+      snake->clear();
+      snake->addToTail(new Node(1, 0));
+      fruit->refresh(snake->list);
+      gameOver();
+    }
 
-  // the snakeCopy is running the path
-  for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
-  {
-    dir = fruitToSnakeHeadPath.charAt(i);
-    if (dir == UP)
-      dir = DOWN;
-    else if (dir == DOWN)
-      dir = UP;
-    else if (dir == LEFT)
-      dir = RIGHT;
-    else if (dir == RIGHT)
-      dir = LEFT;
-    snakeCopy->move(dir);
-  }
-
-  bool crossHitUp = snakeCopy->upCrossWillHitSelf();
-  bool crossHitDown = snakeCopy->downCrossWillHitSelf();
-  bool crossHitLeft = snakeCopy->leftCrossWillHitSelf();
-  bool crossHitRight = snakeCopy->rightCrossWillHitSelf();
-
-  // clear the snakeCopy, free all memory
-  snakeCopy->clear();
-  delete snakeCopy;
-  snakeCopy = NULL;
-
-  Serial.print("hitup:");
-  Serial.print(crossHitUp);
-  Serial.print("  hitdown:");
-  Serial.print(crossHitDown);
-  Serial.print("  hitleft:");
-  Serial.print(crossHitLeft);
-  Serial.print("  hitright:");
-  Serial.print(crossHitRight);
-  Serial.println("--------------------------");
-
-  if (crossHitUp and crossHitDown and crossHitLeft and crossHitRight)
-  {
-    // dead end is found, snake should not eat the fruit direct, detour route is needed
-    int upperCount = snake->getBodyCountOnUpperHalf();
-    int lowerCount = snake->getBodyCountOnLowerHalf();
-    int leftCount = snake->getBodyCountOnLeftHalf();
-    int rightCount = snake->getBodyCountOnRightHalf();
-
-    Serial.println("an dead end will be met");
-    Serial.print("upperCount:");
-    Serial.println(upperCount);
-
-    Serial.print("lowerCount:");
-    Serial.println(lowerCount);
-
-    Serial.print("leftCount:");
-    Serial.println(leftCount);
-
-    Serial.print("rightCount:");
-    Serial.println(rightCount);
+    renderGame();
   }
 }

@@ -8,8 +8,6 @@ Node::Node()
     this->blue = 0;
 }
 
-
-
 Node::Node(int r, int c)
 {
     this->row = r;
@@ -28,7 +26,7 @@ Node::Node(int r, int c, int red, int green, int blue)
     this->blue = blue;
 }
 
-bool Node::compareTo(Node *n)
+bool Node::isSamePosition(Node *n)
 {
     return ((this->row == n->row) && (this->col == n->col));
 }
@@ -91,7 +89,6 @@ void Node::deepCopy(Node *n)
 {
     this->deepCopyPosition(n);
     this->deepCopyColor(n);
-
 }
 
 void Node::deepCopyPosition(Node *n)
@@ -106,4 +103,15 @@ void Node::deepCopyColor(Node *n)
     this->red = n->red;
     this->green = n->green;
     this->blue = n->blue;
+}
+
+void Node::print()
+{
+    Serial.print("<");
+    Serial.print(this->row);
+
+    Serial.print("  ");
+    Serial.print(this->col);
+
+    Serial.println(">");
 }

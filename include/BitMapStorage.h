@@ -2,22 +2,21 @@
 #define BITMAPSTORAGE_H
 
 #include <Arduino.h>
-#include"Constant.h"
+#include "Constant.h"
 #define BYTE_SIZE 8
 class BitMapStorage
 {
 
 public:
-    unsigned int size;
+    unsigned int totalBits;
 
     byte *bitMapArray;
 
     unsigned int maxNumber;
 
 public:
-    BitMapStorage(unsigned int size);
+    BitMapStorage(unsigned int totalBits);
     ~BitMapStorage();
-
 
     bool getNumberStatus(unsigned int num);
 

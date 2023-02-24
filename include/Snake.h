@@ -2,7 +2,10 @@
 #define SNAKE_H
 #include "LinkedList.h"
 #include "Node.h"
-
+#include <MemoryFree.h>
+#include "BitMapStorage.h"
+#include "Constant.h"
+#include "Utils.h"
 class Snake
 {
 public:
@@ -13,9 +16,20 @@ public:
 public:
   Snake();
   ~Snake();
+
+  Node *getHead();
+  Node *getTail();
+
+  Snake *deepCopySnake();
+
   void move(char dir);
+
+  // the reversemove function reverse the previous movement
+  void reverseMove();
   void addToTail(Node *);
   void addToHead(Node *);
+
+  void followSnakeTail();
 
   void eatFruit(Node *);
   int status(Node *);
@@ -47,13 +61,15 @@ public:
 
   bool downCrossWillHitSelf();
 
-
-// below functions are for snake detour route
+  // below functions are for snake detour route
   int getBodyCountOnUpperHalf();
   int getBodyCountOnLowerHalf();
   int getBodyCountOnLeftHalf();
   int getBodyCountOnRightHalf();
 
+  String getTailToHeadPath(Node *fruit);
+  String getFruitToHeadPath(Node *fruit);
+  void dfs(Node *startNode, Node *endNode, BitMapStorage *bs, String *path, String *result, bool *findPath, unsigned int *previousBitSum);
 };
 
 #endif
