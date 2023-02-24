@@ -7,18 +7,18 @@
 #include "Node.h"
 #include "Utils.h"
 #include "Snake.h"
-#include "PathSearch.h"
-
 #include "BitMapStorage.h"
+#include "FruitList.h"
 
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
 Node *fruit = new Node(ROWS - 1, COLS - 1, 0, 1, 0);
 CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
+FruitList *fruitList = new FruitList();
 
-
-
+void runGame2();
+void runGame();
 void gameOver()
 {
   FastLED.clear();
@@ -78,44 +78,28 @@ void setup()
   Serial.println("Program Start");
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
   // FastLED.setMaxPowerInVoltsAndMilliamps(MAX_VOLTS, MAX_AMPS);
-  randomSeed(analogRead(A0));
+  randomSeed(analogRead(A0) * analogRead(A1));
   snake->addToTail(new Node(SNAKE_INIT_ROW, SNAKE_INIT_COL));
 }
 
-PathSearch *ps = new PathSearch(
-    fruit,
-    snake->list);
+// PathSearch *ps = new PathSearch(
+//     fruit,
+//     snake->list);
 
 void loop()
 {
 
-  // Serial.println(freeMemory());
-  // test();
+  Serial.println(freeMemory());
+  runGame();
+}
 
+void runGame()
+{
   char dir = UP;
-
-  String fruitToSnakeHeadPath = ps->getPath();
-
-  // length is 0 means dfs does not find a route to get the fruit
-  if (fruitToSnakeHeadPath.length() == 0)
+  String fruitToSnakeHeadPath = snake->getFruitToHeadPath(fruit);
+  if (fruitToSnakeHeadPath.length() != 0) // dfs found a route
   {
-    snake->guideMoveWithNoPathFound(fruit);
-    int stu = snake->status(fruit);
 
-    // no path was found, snake will never eat a fruit
-    if (stu == HIT_WALL || stu == HIT_SELF)
-    {
-      ps->clear();
-      snake->clear();
-      snake->addToTail(new Node(1, 0));
-      fruit->refresh(snake->list);
-      gameOver();
-    }
-
-    renderGame();
-  }
-  else // dfs found a route
-  {
     for (int i = fruitToSnakeHeadPath.length() - 1; i >= 0; i--)
     {
       dir = fruitToSnakeHeadPath.charAt(i);
@@ -129,7 +113,6 @@ void loop()
         dir = LEFT;
 
       snake->move(dir);
-
       int stu = snake->status(fruit);
       // path was found, snake will eat a fruit and will not hit self or wall
 
@@ -152,9 +135,20 @@ void loop()
       justAteFruit = false;
     }
   }
+  else
+  {
+    snake->guideMoveWithNoPathFound(fruit);
+    int stu = snake->status(fruit);
+    // no path was found, snake will never eat a fruit
+    if (stu == HIT_WALL || stu == HIT_SELF)
+    {
+      // ps->clear();
+      snake->clear();
+      snake->addToTail(new Node(1, 0));
+      fruit->refresh(snake->list);
+      gameOver();
+    }
 
-  ps->clear();
+    renderGame();
+  }
 }
-
-
-

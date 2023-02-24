@@ -3,35 +3,34 @@
 #include "Constant.h"
 #include <Arduino.h>
 #include <LinkedList.h>
-class Node {
-  public:
-    int row;
-    int col;
-    int red;
-    int green;
-    int blue;
+class Node
+{
+public:
+  int row;
+  int col;
+  int red;
+  int green;
+  int blue;
 
+public:
+  Node();
+  Node(int r, int c);
+  Node(int r, int c, int red, int green, int blue);
 
-  public:
-    Node();
-    Node(int r, int c);
-    Node(int r, int c, int red, int green, int blue);
+public:
+  bool isSamePosition(Node *);
 
-  public:
-    bool compareTo(Node*);
+  void reposition();
 
-    void reposition();
+  void recolor();
 
-    void recolor();
+  void print();
 
-    void refresh(LinkedList<Node*>* list);
+  void refresh(LinkedList<Node *> *list);
 
-    void deepCopy(Node *node);
-    void deepCopyPosition(Node *node);
-    void deepCopyColor(Node *node);
-
-
+  void deepCopy(Node *node);
+  void deepCopyPosition(Node *node);
+  void deepCopyColor(Node *node);
 };
-
 
 #endif

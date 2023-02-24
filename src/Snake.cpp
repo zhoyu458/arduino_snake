@@ -74,6 +74,11 @@ void Snake::addToTail(Node *n)
     this->list->add(this->list->size(), n);
 }
 
+void Snake::addToHead(Node *n)
+{
+    this->list->add(n);
+}
+
 int Snake::status(Node *fruit)
 {
 
@@ -217,14 +222,13 @@ bool Snake::HitSelfSideCheckOk(char dir)
 
 void Snake::guideMoveWithNoPathFound(Node *fruit)
 {
-
     if (this->direction == UP)
     {
-        if (this->canGoUp())
+        if (this->canGoUp() and !this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
-        else if (this->canGoLeft())
+        else if (this->canGoLeft() and !this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
@@ -235,11 +239,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == DOWN)
     {
-        if (this->canGoDown())
+        if (this->canGoDown() and !this->downCrossWillHitSelf())
         {
             this->move(DOWN);
         }
-        else if (this->canGoLeft())
+        else if (this->canGoLeft() and !this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
@@ -250,11 +254,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == LEFT)
     {
-        if (this->canGoLeft())
+        if (this->canGoLeft() and !this->leftCrossWillHitSelf())
         {
             this->move(LEFT);
         }
-        else if (this->canGoUp())
+        else if (this->canGoUp() and !this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
@@ -265,11 +269,11 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
     }
     else if (this->direction == RIGHT)
     {
-        if (this->canGoRight())
+        if (this->canGoRight() and !this->rightCrossWillHitSelf())
         {
             this->move(RIGHT);
         }
-        else if (this->canGoUp())
+        else if (this->canGoUp() and !this->upCrossWillHitSelf())
         {
             this->move(UP);
         }
@@ -278,6 +282,77 @@ void Snake::guideMoveWithNoPathFound(Node *fruit)
             this->move(DOWN);
         }
     }
+
+    // if (this->direction == UP)
+    // {
+    //     if (this->canGoUp())
+    //     {
+    //         this->move(UP);
+    //     }
+    //     else if (this->canGoLeft())
+    //     {
+    //         this->move(LEFT);
+    //     }
+    //     else
+    //     {
+    //         this->move(RIGHT);
+    //     }
+    // }
+    // else if (this->direction == DOWN)
+    // {
+    //     if (this->canGoDown())
+    //     {
+    //         this->move(DOWN);
+    //     }
+    //     else if (this->canGoLeft())
+    //     {
+    //         this->move(LEFT);
+    //     }
+    //     else
+    //     {
+    //         this->move(RIGHT);
+    //     }
+    // }
+    // else if (this->direction == LEFT)
+    // {
+    //     if (this->canGoLeft())
+    //     {
+    //         this->move(LEFT);
+    //     }
+    //     else if (this->canGoUp())
+    //     {
+    //         this->move(UP);
+    //     }
+    //     else
+    //     {
+    //         this->move(DOWN);
+    //     }
+    // }
+    // else if (this->direction == RIGHT)
+    // {
+    //     if (this->canGoRight())
+    //     {
+    //         this->move(RIGHT);
+    //     }
+    //     else if (this->canGoUp())
+    //     {
+    //         this->move(UP);
+    //     }
+    //     else
+    //     {
+    //         this->move(DOWN);
+    //     }
+    // }
+}
+
+// follow tail is applied when snake cannot found its tail or No path found approach to the fruit
+void Snake::followSnakeTail()
+{
+    Snake *snakeCopy = this->deepCopySnake();
+    // let the copy follow the its tail
+
+    delete snakeCopy;
+    snakeCopy = NULL;
 }
 
 bool Snake::willHitWall(int r, int c)
@@ -300,7 +375,7 @@ bool Snake::willHitSelf(int r, int c)
         return false;
 
     // head will never hit 2nd, 3rd and 4th part of its body
-    for (int i = 4; i < this->list->size(); i++)
+    for (int i = 1; i < this->list->size(); i++)
     {
         Node *n = this->list->get(i);
         if (n->row == r && n->col == c)
@@ -353,7 +428,7 @@ bool Snake::hasHitSelf()
 
     Node *head = this->list->get(0);
 
-    for (int i = 1; i < this->list->size() - 1; i++)
+    for (int i = 1; i < this->list->size(); i++)
     {
         Node *n = this->list->get(i);
 
@@ -366,18 +441,403 @@ bool Snake::hasHitSelf()
     return false;
 }
 
-bool leftCrossCheckOk(Node *n)
+bool Snake::leftCrossWillHitSelf()
 {
+    Node *head = this->list->get(0);
+
+    // left check is col--
+    int r = head->row;
+
+    int c = head->col;
+    c--; // do not check the head itself
+
+    while (c >= 0)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        c--;
+    }
+    return false;
 }
 
-bool rightCrossCheckOk(Node *n)
+bool Snake::rightCrossWillHitSelf()
 {
+
+    Node *head = this->list->get(0);
+
+    // right check is col++
+    int r = head->row;
+    int c = head->col;
+    c++; // do not check the head itself
+    while (c < COLS)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        c++;
+    }
+    return false;
 }
 
-bool upCrossCheckOk(Node *n)
+bool Snake::upCrossWillHitSelf()
 {
+
+    Node *head = this->list->get(0);
+
+    // up check is row++
+    int r = head->row;
+    int c = head->col;
+    r++; // do not check the head itself
+
+    while (r < ROWS)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        r++;
+    }
+    return false;
 }
 
-bool downCrossCheckOk(Node *n)
+bool Snake::downCrossWillHitSelf()
+
 {
+    Node *head = this->list->get(0);
+    // right check is row--
+    int r = head->row;
+    int c = head->col;
+    r--; // do not check the head itself
+    while (r >= 0)
+    {
+        bool hitSelf = this->willHitSelf(r, c);
+        if (hitSelf)
+            return true;
+        r--;
+    }
+    return false;
+}
+
+int Snake::getBodyCountOnUpperHalf()
+{
+    int count = 0;
+    int upperBoundary = ROWS - 1;
+    int lowerBoundary = ROWS / 2;
+
+    Serial.print("upperBoundary:");
+    Serial.println(upperBoundary);
+    Serial.print("lowerBoundary:");
+    Serial.println(lowerBoundary);
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int r = n->row;
+        int c = n->col;
+
+        if (r >= lowerBoundary && r <= upperBoundary)
+        {
+            Serial.print("<");
+            Serial.print(r);
+            Serial.print("  ");
+            Serial.print(c);
+            Serial.println("> is included");
+            count++;
+        }
+    }
+
+    return count;
+}
+int Snake::getBodyCountOnLowerHalf()
+{
+
+    int count = 0;
+    int upperBoundary = ROWS / 2;
+    int lowerBoundary = 0;
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int r = n->row;
+        if (r >= lowerBoundary && r < upperBoundary)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+int Snake::getBodyCountOnLeftHalf()
+{
+
+    int count = 0;
+    int leftBoundary = 0;
+    int rightBoundary = COLS / 2;
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int c = n->col;
+        if (c >= leftBoundary && c <= rightBoundary)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+int Snake::getBodyCountOnRightHalf()
+
+{
+
+    int count = 0;
+    int leftBoundary = COLS / 2;
+    int rightBoundary = COLS - 1;
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int c = n->col;
+        if (c > leftBoundary && c <= rightBoundary)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+Node *Snake::getHead()
+{
+    return this->list->get(0);
+}
+Node *Snake::getTail()
+{
+    return this->list->get(this->list->size() - 1);
+}
+
+String Snake::getTailToHeadPath(Node *fruit)
+
+{
+    // snake size is less then 5, it never hit it slef
+    if (this->list->size() < 4)
+    {
+        return "ok";
+    }
+    String result = "";
+    String path = "";
+    BitMapStorage bs = BitMapStorage(NUM_LEDS);
+    Node headCopy = Node();
+    Node tailCopy = Node();
+    unsigned int previousBitSum = 0;
+
+    headCopy.deepCopy(this->getHead());
+    tailCopy.deepCopy(this->getTail());
+    bool findPath = false;
+
+    // tail to head, tail is the start and head is the end
+
+    // set up the bit map, exclude snake head and tail
+    for (int i = 1; i < this->list->size() - 1; i++)
+    {
+        Node *n = this->list->get(i);
+        int ledNum = calcLedNumberFromNode(n);
+        bs.setNumberStatus(ledNum, true);
+    }
+
+    int ledNum = calcLedNumberFromNode(fruit);
+    bs.setNumberStatus(ledNum, true);
+
+    dfs(&tailCopy, &headCopy, &bs, &path, &result, &findPath, &previousBitSum);
+    bs.reset();
+
+    return result;
+}
+
+String Snake::getFruitToHeadPath(Node *fruit)
+{
+    // snake size is less then 5, it never hit it slef
+    String result = "";
+    String path = "";
+    BitMapStorage bs = BitMapStorage(NUM_LEDS);
+    Node headCopy = Node();
+    Node fruitCopy = Node();
+    unsigned int previousBitSum = 0;
+
+    headCopy.deepCopy(this->getHead());
+    fruitCopy.deepCopy(fruit);
+    bool findPath = false;
+
+    // tail to head, tail is the start and head is the end
+
+    // set up the bit map, exclude snake head and tail
+    for (int i = 1; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        int ledNum = calcLedNumberFromNode(n);
+        bs.setNumberStatus(ledNum, true);
+    }
+
+    dfs(&fruitCopy, &headCopy, &bs, &path, &result, &findPath, &previousBitSum);
+
+    return result;
+}
+void Snake::dfs(Node *tailCopy, Node *headCopy, BitMapStorage *bs, String *path, String *result, bool *findPath, unsigned int *previousBitSum)
+
+{
+
+    if (freeMemory() < MemoryLowerLimit)
+    {
+        (*findPath) = true; // if run out of memory, then set findPath to ture to stop the search
+        return;
+    }
+    // already found the path
+    if (*findPath == true)
+    {
+        return;
+    }
+
+    if (this->willHitWall(tailCopy->row, tailCopy->col))
+    {
+        return;
+    }
+
+    // tail finds the head
+    if (tailCopy->isSamePosition(headCopy))
+    {
+
+        *result = path->substring(0, path->length());
+        *findPath = true;
+    }
+
+    int ledNum = calcLedNumberFromNode(tailCopy);
+    // the point on the matrix has been searched
+    if (bs->getNumberStatus(ledNum) == true)
+    {
+        return;
+    }
+
+    bs->setNumberStatus(ledNum, true);
+    // consider row
+    if (tailCopy->row < headCopy->row)
+    {
+        *path += UP;
+        tailCopy->row++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row--;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += LEFT;
+        tailCopy->col--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col++;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += RIGHT;
+        tailCopy->col++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col--;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += DOWN;
+        tailCopy->row--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row++;
+        *path = path->substring(0, path->length() - 1);
+    }
+
+    if (tailCopy->row > headCopy->row)
+    {
+        *path += DOWN;
+        tailCopy->row--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row++;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += LEFT;
+        tailCopy->col--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col++;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += RIGHT;
+        tailCopy->col++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col--;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += UP;
+        tailCopy->row++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row--;
+        *path = path->substring(0, path->length() - 1);
+    }
+
+    if (tailCopy->col < headCopy->col)
+    {
+        *path += RIGHT;
+        tailCopy->col++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col--;
+        *path = path->substring(0, path->length() - 1);
+        *path += DOWN;
+        tailCopy->row--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row++;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += UP;
+        tailCopy->row++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row--;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += LEFT;
+        tailCopy->col--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col++;
+        *path = path->substring(0, path->length() - 1);
+    }
+
+    if (tailCopy->col > headCopy->col)
+    {
+        *path += LEFT;
+        tailCopy->col--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col++;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += DOWN;
+        tailCopy->row--;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row++;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += UP;
+        tailCopy->row++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->row--;
+        *path = path->substring(0, path->length() - 1);
+
+        *path += RIGHT;
+        tailCopy->col++;
+        this->dfs(tailCopy, headCopy, bs, path, result, findPath, previousBitSum);
+        tailCopy->col--;
+        *path = path->substring(0, path->length() - 1);
+    }
+}
+
+Snake *Snake::deepCopySnake()
+{
+
+    Snake *snakeCopy = new Snake();
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *snakeSection = this->list->get(i);
+        Node *copy = new Node();
+        copy->deepCopyPosition(snakeSection);
+        snakeCopy->addToTail(copy);
+    }
+
+    return snakeCopy;
 }

@@ -1,28 +1,31 @@
 #include "BitMapStorage.h"
 
-BitMapStorage::BitMapStorage(unsigned int size)
+BitMapStorage::BitMapStorage(unsigned int totalBits)
 {
-    this->size = size;
+    this->totalBits = totalBits;
 
-    this->bitMapArray = new byte[this->size];
+    this->bitMapArray = new byte[this->totalBits / BYTE_SIZE];
 
-    this->maxNumber = size * BYTE_SIZE - 1;
+    this->maxNumber = totalBits - 1;
 
     this->reset();
-
- 
 }
-BitMapStorage::~BitMapStorage(){
-     delete this->bitMapArray;
-     this->bitMapArray = NULL;
-
+BitMapStorage::~BitMapStorage()
+{
+    this->reset();
+    delete this->bitMapArray;
+    this->bitMapArray = NULL;
 }
 bool BitMapStorage::getNumberStatus(unsigned int num)
 {
 
     while (num > this->maxNumber)
     {
-        Serial.println("Bit map number is greater than the max value");
+        Serial.print("Bit map number is greater than the max value:");
+        Serial.print(num);
+        Serial.print(">>>>>");
+        Serial.println(this->maxNumber);
+
         delay(1000);
     }
 
@@ -73,32 +76,35 @@ void BitMapStorage::printBitMapbyNumber(unsigned int num)
     Serial.println();
 }
 
-void BitMapStorage::reset(){
-       for (unsigned int i = 0; i < this->size; i++)
+void BitMapStorage::reset()
+{
+    for (unsigned int i = 0; i < (this->totalBits) / BYTE_SIZE; i++)
     {
-        *(this->bitMapArray+i) = 0;
+        *(this->bitMapArray + i) = 0;
     }
 }
 
-void BitMapStorage::print(){
-
+void BitMapStorage::print()
+{
 
     Serial.println("--------------------------------------------------------------");
 
-    for(unsigned int i = 0; i < this->size; i++){
+    for (unsigned int i = 0; i < (this->totalBits) / BYTE_SIZE; i++)
+    {
         Serial.print(this->bitMapArray[i]);
         Serial.print("  ");
     }
     Serial.println();
     Serial.println("--------------------------------------------------------------");
-
 }
 
- unsigned int BitMapStorage::getSum(){
+unsigned int BitMapStorage::getSum()
+{
     unsigned int sum = 0;
-    for(unsigned int i = 0; i < this->size; i++){
+    for (unsigned int i = 0; i < (this->totalBits) / BYTE_SIZE; i++)
+    {
         sum += this->bitMapArray[i];
     }
 
     return sum;
- }
+}
