@@ -21,9 +21,7 @@ const char DOWN = 'd';
 const char LEFT = 'l';
 const char RIGHT = 'r';
 
-
 const int MemoryLowerLimit = 300;
-const int gameSpeed = 1;
-
+const int gameSpeed = 500;
 
 #endif
