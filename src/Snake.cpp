@@ -48,6 +48,26 @@ void Snake::move(char dir)
     previousTail->blue = head->blue;
 
     this->direction = dir;
+    //---------------------------------------------------//
+    // Node *newHead = new Node();
+    // newHead->deepCopy(this->getHead());
+    // if (dir == UP)
+    //     newHead->row++;
+    // else if (dir == DOWN)
+    //     newHead->row--;
+    // else if (dir == RIGHT)
+    //     newHead->col++;
+    // else if (dir == LEFT)
+    //     newHead->col--;
+    // // add the new head
+    // this->list->add(0, newHead);
+    // // remove the tail
+
+    // Node *removedNode = this->list->remove(this->list->size() - 1);
+    // delete removedNode;
+    // removedNode = NULL;
+
+    //------------------------BELOW IS THE OLD CODE FOR SNAKE MOVE---------------------------//
 
     int size = this->list->size();
     for (int i = size - 2; i >= 0; i--)
@@ -76,7 +96,7 @@ void Snake::addToTail(Node *n)
 
 void Snake::addToHead(Node *n)
 {
-    this->list->add(n);
+    this->list->add(0, n);
 }
 
 int Snake::status(Node *fruit)
@@ -120,6 +140,19 @@ void Snake::eatFruit(Node *fruit)
         head->green = fruit->green;
         head->blue = fruit->blue;
     }
+
+    for (int i = 0; i < this->list->size(); i++)
+    {
+        Node *n = this->list->get(i);
+        n->red = fruit->red;
+        n->green = fruit->green;
+
+        n->blue = fruit->blue;
+    }
+
+    this->list->get(0)->red = 200;
+    this->list->get(0)->green = 0;
+    this->list->get(0)->blue = 0;
 }
 
 void Snake::print()
@@ -415,9 +448,9 @@ bool Snake::hasHitWall()
 {
     Node *head = this->list->get(0);
 
-    if (head->row < 0 || head->row > ROWS)
+    if (head->row < 0 || head->row >= ROWS)
         return true;
-    if (head->col < 0 || head->col > COLS)
+    if (head->col < 0 || head->col >= COLS)
         return true;
 
     return false;
@@ -709,6 +742,7 @@ String Snake::getHeadToFruitPath(Node *fruit)
     result = this->pathParser(result);
     return result;
 }
+
 void Snake::dfs(Node *tailCopy, Node *headCopy, BitMapStorage *bs, String *path, String *result, bool *findPath, unsigned int *previousBitSum)
 
 {
@@ -861,6 +895,7 @@ void Snake::virtualRun(Snake *s, String *path)
         s->move(path->charAt(i));
     }
 }
+
 String Snake::planPath(Node *fruit, bool *interruptPath)
 {
     String result = "";
@@ -873,9 +908,17 @@ String Snake::planPath(Node *fruit, bool *interruptPath)
     delete copy;
     copy = NULL;
 
+    // Serial.print("fruit position");
+    // Serial.print(fruit->row);
+    // Serial.print("  ");
+    // Serial.println(fruit->col);
+
+    // this->print();
+
     // copy snake found a safe route to the fruit
     if (pathToFruit.length() != 0 and pathToTail.length() != 0)
     {
+        // Serial.println("ok");
         *interruptPath = false;
         return pathToFruit;
     }
@@ -883,36 +926,168 @@ String Snake::planPath(Node *fruit, bool *interruptPath)
     else if (pathToFruit.length() != 0 or pathToTail.length() == 0)
     {
         // real snake follow its tail
+        // Serial.println(" NO tail");
+
         *interruptPath = true;
-        return this->getHeadToTailPath(fruit);
+        String path = this->getHeadToTailPath(fruit);
+
+        if (path.length() != 0)
+        {
+            return path;
+        }
+        return this->wandering(fruit, interruptPath);
     }
     // copy snake can see the tail but not found the fruit
     else if (pathToFruit.length() == 0 or pathToTail.length() != 0)
     {
+        // Serial.println("no Fruit");
+
         // real snake follow its tail
         *interruptPath = true;
-        return this->getHeadToTailPath(fruit);
+        String path = this->getHeadToTailPath(fruit);
+        if (path.length() != 0)
+        {
+            return path;
+        }
+        return this->wandering(fruit, interruptPath);
     }
     // copy snake cannot see tail and fruit
     else if (pathToFruit.length() != 0 or pathToTail.length() != 0)
     {
+
+        // Serial.println("neither");
+
         *interruptPath = true;
-        return this->getHeadToTailPath(fruit);
+        String path = this->getHeadToTailPath(fruit);
+        if (path.length() != 0)
+        {
+            return path;
+        }
+        return this->wandering(fruit, interruptPath);
     }
 
     return result;
 }
-void Snake::checkPlanPath(Node *fruit, bool *interruptPath)
-{
-    // the function gurrantee each step is valid, not meet a dead ends
-    String p1 = this->getHeadToFruitPath(fruit);
-    String p2 = this->getHeadToTailPath(fruit);
 
-    if (p1.length() == 0 || p2.length() == 0)
+// The wandering function applys if the snake cannot see the food and its tail
+// The function is going to find a deepest path that allow the snake to walk
+// snake take a step and call the function again if no valid path is found
+
+String Snake::wandering(Node *fruit, bool *interruptPath)
+{
+    *interruptPath = true;
+    String result = "";
+    String path = "";
+    BitMapStorage *bs = new BitMapStorage(NUM_LEDS);
+
+    bool pathPath = false;
+
+    // turn all taken points on the matrix to turn on the bitmap
+    // skip the head
+    for (int i = 1; i < this->list->size(); i++)
     {
-        *interruptPath = true;
+        Node *n = this->list->get(i);
+
+        int ledNum = calcLedNumberFromNode(n);
+
+        bs->setNumberStatus(ledNum, true);
     }
+
+    int ledNum = calcLedNumberFromNode(fruit);
+
+    bs->setNumberStatus(ledNum, true);
+
+    // call DFS function
+    Node *headCopy = new Node();
+
+    headCopy->deepCopy(this->getHead());
+    this->wanderingDFS(headCopy, bs, &path, &result, &pathPath);
+
+    // clear up from here
+    delete headCopy;
+    headCopy = NULL;
+
+    delete bs;
+    bs = NULL;
+
+    return result;
 }
+
+void Snake::wanderingDFS(Node *headCopy, BitMapStorage *bs, String *path, String *result, bool *findPath)
+{
+    // Serial.println(freeMemory());
+    // Serial.print("<");
+    // Serial.print(headCopy->row);
+    // Serial.print("  ");
+    // Serial.print(headCopy->col);
+    // Serial.println(">");
+    // delay(200);
+
+    if (*findPath == true)
+    {
+        return;
+    }
+
+    if (freeMemory() < MemoryLowerLimit)
+    {
+        // Serial.println("out memo force return");
+        *findPath = true;
+        return;
+    }
+
+    if (this->willHitSelf(headCopy->row, headCopy->col) or this->willHitWall(headCopy->row, headCopy->col))
+    {
+        // remove the last char from path
+        // if path.length - 1 is greater than the resutl length
+        if (path->length() - 1 > result->length())
+        {
+            *result = path->substring(0, path->length() - 1);
+            Serial.print("wander path is: ");
+
+            Serial.println(*result);
+        }
+        return;
+    }
+
+    // Serial.print(snakeCopy->getHead()->row);
+    // Serial.println(snakeCopy->getHead()->col);
+
+    int ledNum = calcLedNumberFromNode(headCopy);
+
+    if (bs->getNumberStatus(ledNum) == true)
+    {
+        return;
+    }
+
+    bs->setNumberStatus(ledNum, true);
+
+    // DFS start here
+    // go up
+    *path += UP;
+    headCopy->row++;
+    wanderingDFS(headCopy, bs, path, result, findPath);
+    headCopy->row--;
+    *path = path->substring(0, path->length() - 1);
+
+    *path += DOWN;
+    headCopy->row--;
+    wanderingDFS(headCopy, bs, path, result, findPath);
+    headCopy->row++;
+    *path = path->substring(0, path->length() - 1);
+
+    *path += LEFT;
+    headCopy->col--;
+    wanderingDFS(headCopy, bs, path, result, findPath);
+    headCopy->col++;
+    *path = path->substring(0, path->length() - 1);
+
+    *path += RIGHT;
+    headCopy->col++;
+    wanderingDFS(headCopy, bs, path, result, findPath);
+    headCopy->col--;
+    *path = path->substring(0, path->length() - 1);
+}
+
 Snake *Snake::deepCopySnake()
 
 {
@@ -927,4 +1102,16 @@ Snake *Snake::deepCopySnake()
     }
 
     return snakeCopy;
+}
+
+void Snake::checkPlanPath(Node *fruit, bool *interruptPath)
+{
+    // the function gurrantee each step is valid, not meet a dead ends
+    String p1 = this->getHeadToFruitPath(fruit);
+    String p2 = this->getHeadToTailPath(fruit);
+
+    if (p1.length() == 0 || p2.length() == 0)
+    {
+        *interruptPath = true;
+    }
 }

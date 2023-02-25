@@ -17,12 +17,13 @@ void renderSingleNode(Node *n);
 void renderGame();
 void pause();
 void gameOver();
+void gameRestart();
+
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
-Node *fruit = new Node(ROWS - 1, COLS - 1, 0, 1, 0);
+Node *fruit = new Node(ROWS - 1, COLS - 1, 200, 0, 200);
 CRGB leds[NUM_LEDS];
 bool justAteFruit = false;
-FruitList *fruitList = new FruitList();
 
 String snakePath = "";
 bool interruptPath = false;
@@ -39,8 +40,6 @@ void setup()
 
 void loop()
 {
-
-  // Serial.println(freeMemory());
   runGame2();
 }
 
@@ -48,24 +47,30 @@ void loop()
 
 void runGame2()
 {
-  Serial.println(snake->list->size());
-  Serial.println(freeMemory());
-  Serial.println();
+  // Serial.println("--------------------------------");
+  // Serial.println(snake->list->size());
+  // Serial.println(freeMemory());
 
   snakePath = snake->planPath(fruit, &interruptPath);
+
+  if (snakePath.length() == 0)
+  {
+    // no way to go, game over
+
+    gameOver();
+    gameRestart();
+  }
 
   for (int i = 0; i < snakePath.length(); i++)
   {
     // interrupt occurs while snake is wandering, no route to the fruit or cannot see its tail
-
     snake->move(snakePath.charAt(i));
     int stu = snake->status(fruit);
     if (stu == HIT_WALL or stu == HIT_SELF)
     {
-      snake->clear();
-      snake->addToTail(new Node(1, 0));
-      fruit->refresh(snake->list);
+
       gameOver();
+      gameRestart();
     }
     else if (stu == HIT_FRUIT)
     {
@@ -193,4 +198,11 @@ void runGame()
 
     renderGame();
   }
+}
+
+void gameRestart()
+{
+  snake->clear();
+  snake->addToTail(new Node(SNAKE_INIT_ROW, SNAKE_INIT_COL));
+  fruit->refresh(snake->list);
 }

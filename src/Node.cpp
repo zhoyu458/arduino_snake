@@ -3,8 +3,8 @@ Node::Node()
 {
     this->row = 0;
     this->col = 0;
-    this->red = 0;
-    this->green = 1;
+    this->red = 200;
+    this->green = 0;
     this->blue = 0;
 }
 
@@ -12,7 +12,7 @@ Node::Node(int r, int c)
 {
     this->row = r;
     this->col = c;
-    this->red = 0;
+    this->red = 200;
     this->green = 0;
     this->blue = 1;
 }
@@ -56,10 +56,6 @@ void Node::refresh(LinkedList<Node *> *list)
         canRefresh = true;
         this->reposition();
 
-        // Serial.print(this->row);
-        // Serial.print("  ");
-        // Serial.println(this->col);
-
         for (int i = 0; i < size; i++)
         {
             Node *n = list->get(i);
@@ -70,8 +66,8 @@ void Node::refresh(LinkedList<Node *> *list)
             }
         }
 
-        if (this->row == list->get(0)->row || this->row == list->get(0)->col)
-            continue;
+        // if (this->row == list->get(0)->row || this->row == list->get(0)->col)
+        //     continue;
 
         if (!canRefresh)
             continue;

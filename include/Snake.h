@@ -77,6 +77,9 @@ public:
   String getHeadToTargetPath(Node *target);
 
   void checkPlanPath(Node *fruit, bool *interruptPath);
+
+  String wandering(Node *fruit, bool *interruptPath);
+  void wanderingDFS(Node *headCopy, BitMapStorage *bs, String *path, String *result, bool *findPath);
 };
 
 #endif
