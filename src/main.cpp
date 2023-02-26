@@ -23,7 +23,6 @@ void gameRestart();
 Snake *snake = new Snake();
 Node *fruit = new Node(ROWS - 1, COLS - 1, 200, 0, 200);
 CRGB leds[NUM_LEDS];
-bool justAteFruit = false;
 
 String snakePath = "";
 bool interruptPath = false;
@@ -76,14 +75,9 @@ void runGame2()
     {
       snake->eatFruit(fruit);
       fruit->refresh(snake->list);
-      justAteFruit = true;
     }
 
-    if (!justAteFruit)
-    {
-      delay(gameSpeed);
-    }
-    justAteFruit = false;
+    delay(gameSpeed);
 
     renderGame();
 
@@ -169,17 +163,11 @@ void runGame()
         snake->eatFruit(fruit);
 
         fruit->refresh(snake->list);
-
-        justAteFruit = true;
       }
 
       renderGame();
 
-      if (!justAteFruit)
-      {
-        delay(gameSpeed);
-      }
-      justAteFruit = false;
+      delay(gameSpeed);
     }
   }
   else
