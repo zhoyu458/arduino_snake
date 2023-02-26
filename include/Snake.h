@@ -8,6 +8,12 @@
 #include "Utils.h"
 class Snake
 {
+
+public:
+  static int headRedValue;
+  static int headGreenValue;
+  static int headBlueValue;
+
 public:
   char direction;
   LinkedList<Node *> *list;

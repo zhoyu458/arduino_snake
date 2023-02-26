@@ -12,9 +12,9 @@ Node::Node(int r, int c)
 {
     this->row = r;
     this->col = c;
-    this->red = 200;
-    this->green = 0;
-    this->blue = 1;
+    this->red = 0;
+    this->green = 15;
+    this->blue = 0;
 }
 
 Node::Node(int r, int c, int red, int green, int blue)
@@ -39,9 +39,32 @@ void Node::reposition()
 
 void Node::recolor()
 {
-    this->red = random(12) + 1;
-    this->green = random(6) + 1;
-    this->blue = random(6) + 1;
+    this->red = random(15) + 1;
+    this->green = random(15) + 1;
+    this->blue = random(15) + 1;
+
+    // only allow two color involved
+    // random again from 0 - 2, 0 set red to zero, 1 set green to zero, 2 set blue to zero
+    bool showRed = random(0, 2);
+    bool showGreen = random(0, 2);
+    bool showBlue = random(0, 2);
+    if (!showRed)
+        this->red = 0;
+    if (!showGreen)
+        this->green = 0;
+    if (!showBlue)
+        this->blue = 0;
+
+    if (!showRed and !showGreen and !showBlue)
+    {
+        int temp = random(0, 3);
+        if (temp == 0)
+            this->red = random(15) + 1;
+        else if (temp == 1)
+            this->green = random(15) + 1;
+        else
+            this->blue = random(15) + 1;
+    }
 }
 
 void Node::refresh(LinkedList<Node *> *list)

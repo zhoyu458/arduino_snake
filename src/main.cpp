@@ -21,11 +21,15 @@ void gameRestart();
 
 /*----------------------GAME VARIABLE-----------------------------*/
 Snake *snake = new Snake();
-Node *fruit = new Node(ROWS - 1, COLS - 1, 200, 0, 200);
+Node *fruit = new Node(ROWS - 1, COLS - 1, random(0, 15), random(0, 15), random(0, 15));
 CRGB leds[NUM_LEDS];
 
 String snakePath = "";
 bool interruptPath = false;
+
+int Snake::headRedValue = 0;
+int Snake::headGreenValue = 50;
+int Snake::headBlueValue = 0;
 
 void setup()
 {

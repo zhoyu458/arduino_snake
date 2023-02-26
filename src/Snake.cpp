@@ -3,6 +3,8 @@
 
 Snake::Snake()
 {
+
+
     this->list = new LinkedList<Node *>();
     this->direction = UP;
     this->previousTail = new Node();
@@ -150,8 +152,8 @@ void Snake::eatFruit(Node *fruit)
         n->blue = fruit->blue;
     }
 
-    this->list->get(0)->red = 200;
-    this->list->get(0)->green = 0;
+    this->list->get(0)->red = headRedValue;
+    this->list->get(0)->green = 50;
     this->list->get(0)->blue = 0;
 }
 
